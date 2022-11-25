@@ -1,9 +1,5 @@
-import time
-
-from sanic import Request, HTTPResponse, Sanic
 from sanic.http import Http
 from sanic.log import access_logger
-from sanic.server import HttpProtocol
 
 
 class SanicHttp(Http):
@@ -42,18 +38,3 @@ class SanicHttp(Http):
                 return f"{size:3.1f} {count}"
             size /= 1024.0
         return f"{size:3.1f} YB"
-
-
-async def proc_response(request: Request, response: HTTPResponse):
-    """
-    处理响应的中间件
-    Args:
-        request:
-        response:
-
-    Returns:
-
-    """
-    request.ctx.et = time.perf_counter()
-
-    return response

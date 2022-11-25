@@ -11,6 +11,7 @@ dependencies = [
     "sanic-ext>=22.9.1",
     "loguru>=0.6.0",
     "orjson>=3.8.2",
+    "pygments>=2.13.0",
 ]
 requires-python = ">=3.8"
 readme = "README.MD"

@@ -1,14 +1,12 @@
 import inspect
-import time
 
 from sanic import Request
+from sanic_api.api import API
+from sanic_api.enum import ParamEnum
+from sanic_api.exception import ValidationInitError
 
-from .api import API
-from .enum import ParamEnum
-from .exception import ValidationInitError
 
-
-def do_validation(param_enum: ParamEnum, api: API, request: Request):
+def _do_validation(param_enum: ParamEnum, api: API, request: Request):
     if param_enum == ParamEnum.JSON:
         req_data = dict(request.json)
     elif param_enum in [ParamEnum.QUERY, param_enum.FORM]:
@@ -49,7 +47,6 @@ async def validators(request: Request):
     Returns:
 
     """
-    request.ctx.st = time.perf_counter()
     _, handler, _ = request.app.router.get(
         request.path,
         request.method,
@@ -65,11 +62,11 @@ async def validators(request: Request):
         raise ValidationInitError("不能同时存在json参数和form参数")
 
     if api.json_req_type:
-        do_validation(param_enum=ParamEnum.JSON, api=api, request=request)
+        _do_validation(param_enum=ParamEnum.JSON, api=api, request=request)
     elif api.form_req_type:
-        do_validation(param_enum=ParamEnum.FORM, api=api, request=request)
+        _do_validation(param_enum=ParamEnum.FORM, api=api, request=request)
     if api.query_req_type:
-        do_validation(param_enum=ParamEnum.QUERY, api=api, request=request)
+        _do_validation(param_enum=ParamEnum.QUERY, api=api, request=request)
 
     request.match_info.update({"api": api})
     request.ctx.api = api

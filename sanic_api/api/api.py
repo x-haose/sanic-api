@@ -10,9 +10,9 @@ from pydantic import BaseModel
 from pydantic import ValidationError as PyDanticValidationError
 from sanic import HTTPResponse, Request
 from sanic.response import json
-from .enum import ParamEnum, RespCodeEnum
-from .exception import ServerException, ValidationError
-from .model import ListModel
+from sanic_api.enum import ParamEnum, RespCodeEnum
+from sanic_api.exception import ServerException, ValidationError
+from sanic_api.model import ListModel
 
 
 @dataclass
