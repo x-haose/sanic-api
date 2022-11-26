@@ -46,3 +46,11 @@ dev = [
     # 导入格式化
     "isort>=5.10.1",
 ]
+
+[tool.pdm.scripts]
+# 格式化
+black = "black sanic_api"
+# 导入
+isort = "isort sanic_api"
+# 同时执行上面两条
+style = { composite = ["black", "isort"] }
