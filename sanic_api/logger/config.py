@@ -49,9 +49,9 @@ class InterceptHandler(logging.StreamHandler):
 
         if name == "tortoise.db_client":
             if (
-                    record.levelname == "DEBUG"
-                    and not message.startswith("Created connection pool")
-                    and not message.startswith("Closed connection pool")
+                record.levelname == "DEBUG"
+                and not message.startswith("Created connection pool")
+                and not message.startswith("Closed connection pool")
             ):
                 message = highlight(message, postgres, terminal_formatter).rstrip()
 

@@ -6,7 +6,8 @@ from loguru import logger
 from sanic import Sanic
 from sanic.log import LOGGING_CONFIG_DEFAULTS
 from sanic.server import HttpProtocol
-from sanic_api.logger.middleware import proc_response, proc_request
+
+from sanic_api.logger.middleware import proc_request, proc_response
 from sanic_api.logger.sanic_http import SanicHttp
 
 
@@ -19,16 +20,16 @@ def init(sanic_app: Sanic):
     Returns:
 
     """
-    is_debug = sanic_app.config.debug
+    is_debug = sanic_app.config.get("debug")
     log_level = "DEBUG" if is_debug else "INFO"
     logger.configure(handlers=[{"sink": sys.stderr, "level": log_level}])
 
     sanic_log_config = LOGGING_CONFIG_DEFAULTS
-    sanic_log_config["handlers"]["console"]["class"] = "sanic_api.logger.logger.InterceptHandler"
-    sanic_log_config["handlers"]["error_console"]["class"] = "sanic_api.logger.logger.InterceptHandler"
-    sanic_log_config["handlers"]["access_console"]["class"] = "sanic_api.logger.logger.InterceptHandler"
+    sanic_log_config["handlers"]["console"]["class"] = "sanic_api.logger.config.InterceptHandler"
+    sanic_log_config["handlers"]["error_console"]["class"] = "sanic_api.logger.config.InterceptHandler"
+    sanic_log_config["handlers"]["access_console"]["class"] = "sanic_api.logger.config.InterceptHandler"
 
-    if sanic_app.config.sql_log:
+    if sanic_app.config.get("sql_log"):
         sanic_log_config["loggers"]["tortoise"] = {"level": log_level, "handlers": ["console"]}
 
     del sanic_log_config["handlers"]["console"]["stream"]

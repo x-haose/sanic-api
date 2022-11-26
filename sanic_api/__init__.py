@@ -12,6 +12,6 @@ def init_api(app: Sanic):
     Returns:
 
     """
-    api.init(app)
     logger.init(app)
+    api.init(app)
     openapi.init(app)

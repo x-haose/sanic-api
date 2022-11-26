@@ -1,9 +1,9 @@
 import time
 
-from sanic import Request, HTTPResponse
+from sanic import HTTPResponse, Request
 
 
-async def proc_request(request: Request, response: HTTPResponse):
+async def proc_request(request: Request):
     """
     处理请求的中间件
     Args:
@@ -14,8 +14,6 @@ async def proc_request(request: Request, response: HTTPResponse):
 
     """
     request.ctx.st = time.perf_counter()
-
-    return response
 
 
 async def proc_response(request: Request, response: HTTPResponse):
