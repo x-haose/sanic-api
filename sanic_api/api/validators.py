@@ -1,6 +1,7 @@
 import inspect
 
 from sanic import Request
+
 from sanic_api.api import API
 from sanic_api.enum import ParamEnum
 from sanic_api.exception import ValidationInitError

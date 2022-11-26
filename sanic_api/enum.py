@@ -9,6 +9,7 @@ class Field(object):
     """
     枚举字段类
     """
+
     value: Any = field(default=auto())
     desc: str = field(default_factory=str)
 
@@ -50,6 +51,7 @@ class RespCodeEnum(EnumBase):
     """
     响应码枚举
     """
+
     SUCCESS = Field(10000, desc="成功")
     FAILED = Field(40000, desc="失败")
 
@@ -61,6 +63,6 @@ class ParamEnum(EnumBase):
     参数位置
     """
 
-    JSON = Field('json')
+    JSON = Field("json")
     FORM = Field("form")
     QUERY = Field("query")

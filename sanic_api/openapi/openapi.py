@@ -2,13 +2,14 @@ import inspect
 
 from pydantic import BaseModel
 from sanic import Sanic
-from sanic_api.api import API
-from sanic_api.api.validators import get_handler_param
-from sanic_api.model import ListModel
 from sanic_ext.extensions.openapi.builders import OperationBuilder, OperationStore, SpecificationBuilder
 from sanic_ext.extensions.openapi.definitions import Schema
 from sanic_ext.extensions.openapi.types import Array, Object
 from sanic_ext.utils.route import clean_route_name, get_all_routes
+
+from sanic_api.api import API
+from sanic_api.api.validators import get_handler_param
+from sanic_api.model import ListModel
 
 
 # noinspection PyUnusedLocal

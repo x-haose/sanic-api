@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from pydantic import ValidationError as PyDanticValidationError
 from sanic import HTTPResponse, Request
 from sanic.response import json
+
 from sanic_api.enum import ParamEnum, RespCodeEnum
 from sanic_api.exception import ServerException, ValidationError
 from sanic_api.model import ListModel
@@ -115,11 +116,11 @@ class API(metaclass=ABCMeta):
             raise ValidationError(e.errors())
 
     def json_resp(
-            self,
-            http_code: int = 200,
-            headers: Optional[Dict[str, str]] = None,
-            server_code: RespCodeEnum = RespCodeEnum.SUCCESS,
-            message: str = "",
+        self,
+        http_code: int = 200,
+        headers: Optional[Dict[str, str]] = None,
+        server_code: RespCodeEnum = RespCodeEnum.SUCCESS,
+        message: str = "",
     ):
         """
         根据响应数据返回json格式的响应
@@ -136,26 +137,3 @@ class API(metaclass=ABCMeta):
         return Response(
             data=self.resp, http_code=http_code, headers=headers, server_code=server_code, message=message
         ).json_resp()
-
-
-def handle_exception(request: Request, e):
-    """
-    异常拦截处理
-    Args:
-        request: 请求
-        e: 异常信息
-
-    Returns:
-        返回处理异常后的响应
-    """
-    error_name = e.__class__.__name__
-
-    if isinstance(e, ServerException):
-        return Response(
-            http_code=e.status_code, server_code=e.server_code, message=e.message, data=e.context
-        ).json_resp()
-
-    logger.exception(e)
-    return Response(
-        http_code=500, server_code=RespCodeEnum.FAILED, message=f"服务端业务发生未知异常：[{error_name}] {e}"
-    ).json_resp()
