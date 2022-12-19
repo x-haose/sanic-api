@@ -1,4 +1,4 @@
-![Logo](images/logo.png)
+![logo](https://images.haose.pro/2022/12/19/logo_17%3A34%3A07_qkt9yi4d7u.png)
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 [![Python](https://img.shields.io/badge/Python-3.8+-yellow.svg?logo=python)]()
@@ -77,10 +77,3 @@ if __name__ == '__main__':
 ## 文档
 
 [文档](https://linktodocumentation)
-
-## 致谢
-
-- [非常棒的 Readme 模板](https://awesomeopensource.com/project/elangosundar/awesome-README-templates)
-- [非常棒的 README](https://github.com/matiassingers/awesome-readme)
-- [如何写好 readme](https://bulldogjob.com/news/449-how-to-write-a-good-readme-for-your-github-project)
-
