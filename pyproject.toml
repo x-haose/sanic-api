@@ -1,6 +1,6 @@
 [project]
 name = "sanic-api"
-version = "0.1.0"
+version = "0.1.1"
 description = "让您的sanic服务程序更好的支持API文档、参数校验、日志打印、响应规范等"
 authors = [
     { name = "昊色居士", email = "xhrtxh@gmail.com" },
