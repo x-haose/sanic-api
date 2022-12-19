@@ -30,14 +30,6 @@ name = "pypi"
 url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 verify_ssl = true
 
-[tool.black]
-line-length = 110
-target-version = ["py310"]
-
-[tool.isort]
-profile = "black"
-line_length = 110
-include_trailing_comma = true
 
 [tool.pdm.dev-dependencies]
 dev = [
