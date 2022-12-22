@@ -16,7 +16,11 @@ class ServerException(SanicException):
         extra=None,
     ) -> None:
         super(ServerException, self).__init__(
-            message=message, status_code=status_code, quiet=quiet, context=context, extra=extra
+            message=message,
+            status_code=status_code,
+            quiet=quiet,
+            context=context,
+            extra=extra,
         )
         self.server_code = server_code or RespCodeEnum.FAILED
         self.message = message or server_code.desc
@@ -35,4 +39,6 @@ class ValidationError(ServerException):
     """
 
     def __init__(self, errors: list, *args, **kwargs):
-        super(ValidationError, self).__init__(server_code=RespCodeEnum.PARAM_FAILED, context=errors)
+        super(ValidationError, self).__init__(
+            server_code=RespCodeEnum.PARAM_FAILED, context=errors
+        )

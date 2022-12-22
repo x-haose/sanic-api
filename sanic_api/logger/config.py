@@ -1,6 +1,6 @@
-import sys
 import logging
 import logging.config
+import sys
 
 from loguru import logger
 from pygments import highlight
@@ -31,7 +31,9 @@ class InterceptHandler(logging.StreamHandler):
         msg = self.highlight_sql(record, msg)
 
         if "Dispatching signal" not in msg:
-            logger.opt(depth=depth, exception=record.exc_info).log(level, msg, type=record.name)
+            logger.opt(depth=depth, exception=record.exc_info).log(
+                level, msg, type=record.name
+            )
 
     def highlight_sql(self, record: logging.LogRecord, message: str):
         """

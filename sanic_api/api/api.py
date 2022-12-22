@@ -60,7 +60,13 @@ class Response:
             "message": self.message or self.server_code.desc,
             "data": self.data,
         }
-        return json(body=data, status=self.http_code, headers=self.headers, dumps=dumps, **kwargs)
+        return json(
+            body=data,
+            status=self.http_code,
+            headers=self.headers,
+            dumps=dumps,
+            **kwargs
+        )
 
 
 class API(metaclass=ABCMeta):
@@ -92,7 +98,9 @@ class API(metaclass=ABCMeta):
         if self.query_req:
             data["query"] = self.query_req.dict()
 
-        return py_json.dumps(py_json.loads(orjson_dumps(data)), ensure_ascii=False, indent=4)
+        return py_json.dumps(
+            py_json.loads(orjson_dumps(data)), ensure_ascii=False, indent=4
+        )
 
     def validate_params(self, req_data: dict, param_enum: ParamEnum):
         """
@@ -135,5 +143,9 @@ class API(metaclass=ABCMeta):
         """
 
         return Response(
-            data=self.resp, http_code=http_code, headers=headers, server_code=server_code, message=message
+            data=self.resp,
+            http_code=http_code,
+            headers=headers,
+            server_code=server_code,
+            message=message,
         ).json_resp()

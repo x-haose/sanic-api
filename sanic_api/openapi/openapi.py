@@ -2,7 +2,9 @@ import inspect
 
 from pydantic import BaseModel
 from sanic import Sanic
-from sanic_ext.extensions.openapi.builders import OperationBuilder, OperationStore, SpecificationBuilder
+from sanic_ext.extensions.openapi.builders import (OperationBuilder,
+                                                   OperationStore,
+                                                   SpecificationBuilder)
 from sanic_ext.extensions.openapi.definitions import Schema
 from sanic_ext.extensions.openapi.types import Array, Object
 from sanic_ext.utils.route import clean_route_name, get_all_routes
@@ -65,22 +67,30 @@ def auto_doc(app: Sanic, loop):
             else:
                 body_type, mine_type, body_dict = [None] * 3
             if body_type:
-                body_schema: dict = body_type.schema(ref_template="#/components/schemas/{model}")
+                body_schema: dict = body_type.schema(
+                    ref_template="#/components/schemas/{model}"
+                )
                 body_dict = {
                     mine_type: Object(body_schema["properties"]),
                 }
-                for model_name, schema_model in body_schema.get("definitions", {}).items():
+                for model_name, schema_model in body_schema.get(
+                    "definitions", {}
+                ).items():
                     specification.add_component("schemas", model_name, schema_model)
                 operation.body(body_dict)
 
             if api.query_req_type:
-                for k, v in api.query_req_type.schema()["properties"].items():  # type: (str, dict)
+                for k, v in api.query_req_type.schema()[
+                    "properties"
+                ].items():  # type: (str, dict)
                     operation.parameter(k, Schema(**v))
 
             if api.response_type:
                 if issubclass(api.response_type, BaseModel):
                     schema = Object(
-                        api.response_type.schema(ref_template="#/components/schemas/{model}")["properties"]
+                        api.response_type.schema(
+                            ref_template="#/components/schemas/{model}"
+                        )["properties"]
                     )
                     if issubclass(api.response_type, ListModel):
                         schema = Array(schema)
@@ -89,7 +99,9 @@ def auto_doc(app: Sanic, loop):
                         content={"application/json": schema},
                         description="成功",
                     )
-                    specification.add_component("schemas", api.response_type.__name__, schema)
+                    specification.add_component(
+                        "schemas", api.response_type.__name__, schema
+                    )
 
             operation_default["operationId"] = f"{method.lower()}~{route_name}"
             operation_default["summary"] = clean_route_name(route_name)
@@ -100,11 +112,18 @@ def auto_doc(app: Sanic, loop):
                 operation_default["servers"].append({"url": f"//{host}"})
 
             for _parameter in route_parameters:
-                if any((param.fields["name"] == _parameter.name for param in operation.parameters)):
+                if any(
+                    (
+                        param.fields["name"] == _parameter.name
+                        for param in operation.parameters
+                    )
+                ):
                     continue
 
                 kwargs = {}
-                if operation_autodoc and (parameters := operation_autodoc.get("parameters")):
+                if operation_autodoc and (
+                    parameters := operation_autodoc.get("parameters")
+                ):
                     description = None
                     for param in parameters:
                         if param["name"] == _parameter.name:
