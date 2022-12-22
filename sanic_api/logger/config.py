@@ -1,3 +1,4 @@
+import sys
 import logging
 import logging.config
 
@@ -15,23 +16,22 @@ class InterceptHandler(logging.StreamHandler):
         except ValueError:
             level = record.levelno
 
-        # Find caller from where originated the logged message
-        frame, depth = logging.currentframe(), 2
-        while frame.f_code.co_filename == logging.__file__:
-            frame = frame.f_back  # type: ignore
+        # Find caller from where originated the logged message.
+        # noinspection PyProtectedMember,PyUnresolvedReferences
+        frame, depth = sys._getframe(6), 6
+        while frame and frame.f_code.co_filename == logging.__file__:
+            frame = frame.f_back
             depth += 1
 
-        fmt = "(%(name)s) %(message)s"
-        sanic_access_fmt = (
-            "(%(name)s) [%(host)s]: %(request)s %(message)s %(status)d %(byte)s %(time)s args: %(req_args)s"
-        )
+        fmt = "%(message)s"
+        sanic_access_fmt = "[%(host)s]: %(request)s %(message)s %(status)d %(byte)s %(time)s args: %(req_args)s"
         fmt = fmt if record.name != "sanic.access" else sanic_access_fmt
         formatter = logging.Formatter(fmt=fmt)
         msg = formatter.format(record)
         msg = self.highlight_sql(record, msg)
 
         if "Dispatching signal" not in msg:
-            logger.opt(depth=depth, exception=record.exc_info).log(level, msg)
+            logger.opt(depth=depth, exception=record.exc_info).log(level, msg, type=record.name)
 
     def highlight_sql(self, record: logging.LogRecord, message: str):
         """

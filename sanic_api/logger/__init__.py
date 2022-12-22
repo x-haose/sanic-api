@@ -3,10 +3,12 @@ import logging.config
 import sys
 
 from loguru import logger
+# noinspection PyProtectedMember
+from loguru._defaults import env
 from sanic import Sanic
-from sanic.log import LOGGING_CONFIG_DEFAULTS
 from sanic.server import HttpProtocol
 
+from sanic_api.logger.config import InterceptHandler
 from sanic_api.logger.middleware import proc_request, proc_response
 from sanic_api.logger.sanic_http import SanicHttp
 
@@ -21,22 +23,19 @@ def init(sanic_app: Sanic):
 
     """
     is_debug = sanic_app.config.get("debug")
-    log_level = "DEBUG" if is_debug else "INFO"
-    logger.configure(handlers=[{"sink": sys.stderr, "level": log_level}])
+    log_level = logging.DEBUG if is_debug else logging.INFO
+    log_format = env(
+        "LOGURU_FORMAT",
+        str,
+        "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | "
+        "<red>{extra[type]: <10}</red> | "
+        "<level>{level: <8}</level> | "
+        "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>",
+    )
+    logger.remove()
+    logger.add(sys.stdout, colorize=True, format=log_format)
 
-    sanic_log_config = LOGGING_CONFIG_DEFAULTS
-    sanic_log_config["handlers"]["console"]["class"] = "sanic_api.logger.config.InterceptHandler"
-    sanic_log_config["handlers"]["error_console"]["class"] = "sanic_api.logger.config.InterceptHandler"
-    sanic_log_config["handlers"]["access_console"]["class"] = "sanic_api.logger.config.InterceptHandler"
-
-    if sanic_app.config.get("sql_log"):
-        sanic_log_config["loggers"]["tortoise"] = {"level": log_level, "handlers": ["console"]}
-
-    del sanic_log_config["handlers"]["console"]["stream"]
-    del sanic_log_config["handlers"]["error_console"]["stream"]
-    del sanic_log_config["handlers"]["access_console"]["stream"]
-
-    logging.config.dictConfig(sanic_log_config)
+    logging.basicConfig(handlers=[InterceptHandler()], level=log_level, force=True)
 
     HttpProtocol.HTTP_CLASS = SanicHttp
     sanic_app.on_request(proc_request)

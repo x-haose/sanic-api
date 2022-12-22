@@ -56,8 +56,8 @@ class Response:
 
         dumps = dumps or json_dumps
         data = {
-            "returnCode": self.server_code.value,
-            "returnMessage": self.message or self.server_code.desc,
+            "code": self.server_code.value,
+            "message": self.message or self.server_code.desc,
             "data": self.data,
         }
         return json(body=data, status=self.http_code, headers=self.headers, dumps=dumps, **kwargs)

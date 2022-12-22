@@ -1,11 +1,13 @@
 from sanic import Sanic, text
+from sanic.log import logger
 from sanic_api import init_api
 
-app = Sanic("Sanic-API")
+app = Sanic("Sanic-API", configure_logging=False)
 
 
 @app.get('/')
 async def index(request):
+    logger.info("Sanic-API Example")
     return text("Sanic-API Example")
 
 
