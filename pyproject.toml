@@ -37,14 +37,20 @@ dev = [
     "black>=22.10.0",
     # 导入格式化
     "isort>=5.10.1",
+    # 自动删除未使用的导入和未使用的变量
     "autoflake>=2.0.0",
+    # 静态类型检查
     "mypy>=0.991",
 ]
 
 [tool.pdm.scripts]
-# 格式化
-black = "black sanic_api"
+# 自动删除未使用的导入和未使用的变量
+autoflake = "autoflake --in-place --recursive sanic_api"
 # 导入
 isort = "isort sanic_api"
-# 同时执行上面两条
-style = { composite = ["black", "isort"] }
+# 格式化
+black = "black sanic_api"
+# 静态类型检查
+mypy = "mypy sanic_api"
+# 依次执行上面的命令
+check = { composite = ["autoflake", "isort", "black", "mypy"] }
