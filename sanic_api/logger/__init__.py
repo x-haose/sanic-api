@@ -3,6 +3,7 @@ import logging.config
 import sys
 
 from loguru import logger
+
 # noinspection PyProtectedMember
 from loguru._defaults import env
 from sanic import Sanic

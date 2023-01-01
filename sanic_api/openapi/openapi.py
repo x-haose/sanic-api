@@ -2,9 +2,11 @@ import inspect
 
 from pydantic import BaseModel
 from sanic import Sanic
-from sanic_ext.extensions.openapi.builders import (OperationBuilder,
-                                                   OperationStore,
-                                                   SpecificationBuilder)
+from sanic_ext.extensions.openapi.builders import (
+    OperationBuilder,
+    OperationStore,
+    SpecificationBuilder,
+)
 from sanic_ext.extensions.openapi.definitions import Schema
 from sanic_ext.extensions.openapi.types import Array, Object
 from sanic_ext.utils.route import clean_route_name, get_all_routes

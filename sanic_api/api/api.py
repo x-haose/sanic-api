@@ -4,11 +4,10 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any, Dict, Optional
 
-from loguru import logger
 from orjson import dumps as orjson_dumps
 from pydantic import BaseModel
 from pydantic import ValidationError as PyDanticValidationError
-from sanic import HTTPResponse, Request
+from sanic import HTTPResponse
 from sanic.response import json
 
 from sanic_api.enum import ParamEnum, RespCodeEnum
