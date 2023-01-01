@@ -37,6 +37,8 @@ dev = [
     "black>=22.10.0",
     # 导入格式化
     "isort>=5.10.1",
+    "autoflake>=2.0.0",
+    "mypy>=0.991",
 ]
 
 [tool.pdm.scripts]
