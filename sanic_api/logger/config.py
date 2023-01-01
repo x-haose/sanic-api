@@ -1,6 +1,8 @@
 import logging
 import logging.config
 import sys
+from types import FrameType
+from typing import Optional, Union
 
 from loguru import logger
 from pygments import highlight
@@ -12,13 +14,14 @@ class InterceptHandler(logging.StreamHandler):
     def emit(self, record: logging.LogRecord):
         # Get corresponding Loguru level if it exists
         try:
-            level = logger.level(record.levelname).name
+            level: Union[int, str] = logger.level(record.levelname).name
         except ValueError:
             level = record.levelno
 
         # Find caller from where originated the logged message.
         # noinspection PyProtectedMember,PyUnresolvedReferences
-        frame, depth = sys._getframe(6), 6
+        frame: Optional[FrameType] = sys._getframe(6)
+        depth: int = 6
         while frame and frame.f_code.co_filename == logging.__file__:
             frame = frame.f_back
             depth += 1

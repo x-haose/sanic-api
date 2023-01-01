@@ -67,7 +67,7 @@ def auto_doc(app: Sanic, loop):
                 body_type = api.form_req_type
                 mine_type = "application/x-www-form-urlencoded"
             else:
-                body_type, mine_type, body_dict = [None] * 3
+                body_type, mine_type, body_dict = ["", "", {}]
             if body_type:
                 body_schema: dict = body_type.schema(
                     ref_template="#/components/schemas/{model}"
@@ -89,7 +89,7 @@ def auto_doc(app: Sanic, loop):
 
             if api.response_type:
                 if issubclass(api.response_type, BaseModel):
-                    schema = Object(
+                    schema: Schema = Object(
                         api.response_type.schema(
                             ref_template="#/components/schemas/{model}"
                         )["properties"]

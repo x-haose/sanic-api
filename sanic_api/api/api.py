@@ -69,10 +69,10 @@ class Response:
 
 
 class API(metaclass=ABCMeta):
-    json_req: BaseModel = None
-    form_req: BaseModel = None
-    query_req: BaseModel = None
-    resp: Any = None
+    json_req: Optional[BaseModel] = None
+    form_req: Optional[BaseModel] = None
+    query_req: Optional[BaseModel] = None
+    resp: Optional[Any] = None
 
     def __init__(self):
         self.response_type = self.__class__.__annotations__.get("resp")

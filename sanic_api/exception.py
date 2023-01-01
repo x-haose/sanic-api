@@ -2,14 +2,14 @@ from typing import Any, Optional
 
 from sanic.exceptions import SanicException
 
-from .enum import Field, RespCodeEnum
+from .enum import EnumBase, Field, RespCodeEnum
 
 
 class ServerException(SanicException):
     def __init__(
         self,
-        message: str = None,
-        server_code: Optional[Any] = None,
+        message: Optional[str] = None,
+        server_code: Optional[EnumBase] = None,
         status_code: Optional[int] = None,
         quiet: Optional[bool] = None,
         context: Any = None,
@@ -23,7 +23,7 @@ class ServerException(SanicException):
             extra=extra,
         )
         self.server_code = server_code or RespCodeEnum.FAILED
-        self.message = message or server_code.desc
+        self.message = message or self.server_code.desc
         self.status_code = status_code or 200
 
 
