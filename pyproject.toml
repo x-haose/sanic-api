@@ -23,6 +23,10 @@ license = { text = "MIT" }
 requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"
 
+[tool.mypy]
+python_version = "3.8"
+ignore_missing_imports = true
+
 [tool.pdm]
 
 [[tool.pdm.source]]
