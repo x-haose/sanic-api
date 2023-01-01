@@ -112,13 +112,12 @@ class API(metaclass=ABCMeta):
 
         """
         try:
-            match param_enum:
-                case ParamEnum.JSON:
-                    self.json_req = self.json_req_type(**req_data)
-                case ParamEnum.QUERY:
-                    self.query_req = self.query_req_type(**req_data)
-                case ParamEnum.FORM:
-                    self.form_req = self.form_req_type(**req_data)
+            if param_enum == ParamEnum.JSON:
+                self.json_req = self.json_req_type(**req_data)
+            elif param_enum == ParamEnum.QUERY:
+                self.query_req = self.query_req_type(**req_data)
+            elif param_enum == ParamEnum.FORM:
+                self.form_req = self.form_req_type(**req_data)
         except PyDanticValidationError as e:
             raise ValidationError(e.errors())
 
