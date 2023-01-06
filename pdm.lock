@@ -167,6 +167,11 @@ requires_python = ">=3.7"
 summary = "A lil' TOML parser"
 
 [[package]]
+name = "types-pyyaml"
+version = "6.0.12.2"
+summary = "Typing stubs for PyYAML"
+
+[[package]]
 name = "typing-extensions"
 version = "4.4.0"
 requires_python = ">=3.7"
@@ -198,7 +203,7 @@ summary = "A small Python utility to set file creation time on Windows"
 
 [metadata]
 lock_version = "4.0"
-content_hash = "sha256:9588ee23d23eb6a4618645923b9c4fe447cc6b54df24cce142c2961398b36c7c"
+content_hash = "sha256:ab9fbc9005d70b617044556eefff022c4ddbe20f608eb07c0d5f1fd1537c3397"
 
 [metadata.files]
 "aiofiles 22.1.0" = [
@@ -550,6 +555,10 @@ content_hash = "sha256:9588ee23d23eb6a4618645923b9c4fe447cc6b54df24cce142c296139
 "tomli 2.0.1" = [
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/97/75/10a9ebee3fd790d20926a90a2547f0bf78f371b2f13aa822c759680ca7b9/tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/c0/3f/d7af728f075fb08564c5949a9c95e44352e23dee646869fa104a3b2060a3/tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},
+]
+"types-pyyaml 6.0.12.2" = [
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/13/c2/aff0c123a4a8e4b360a52bb62019949fa691d02ca0fda1ac5010171d9d42/types_PyYAML-6.0.12.2-py3-none-any.whl", hash = "sha256:1e94e80aafee07a7e798addb2a320e32956a373f376655128ae20637adb2655b"},
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/98/f1/b811af145690f4585e5ef03ce961b9ed3e361ace950416bd577dfa6c4918/types-PyYAML-6.0.12.2.tar.gz", hash = "sha256:6840819871c92deebe6a2067fb800c11b8a063632eb4e3e755914e7ab3604e83"},
 ]
 "typing-extensions 4.4.0" = [
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/0b/8e/f1a0a5a76cfef77e1eb6004cb49e5f8d72634da638420b9ea492ce8305e8/typing_extensions-4.4.0-py3-none-any.whl", hash = "sha256:16fa4864408f655d35ec496218b85f79b3437c829e93320c7c9215ccfd92489e"},
