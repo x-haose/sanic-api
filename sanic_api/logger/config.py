@@ -4,10 +4,12 @@ import sys
 from types import FrameType
 from typing import Optional, Union
 
+import sanic.exceptions
 from loguru import logger
 from pygments import highlight
 from pygments.formatters.terminal import TerminalFormatter
 from pygments.lexers.sql import PostgresLexer
+from sanic import Request
 
 
 class InterceptHandler(logging.StreamHandler):
@@ -32,11 +34,24 @@ class InterceptHandler(logging.StreamHandler):
         formatter = logging.Formatter(fmt=fmt)
         msg = formatter.format(record)
         msg = self.highlight_sql(record, msg)
+        req_id = self.get_req_id()
 
         if "Dispatching signal" not in msg:
             logger.opt(depth=depth, exception=record.exc_info).log(
-                level, msg, type=record.name
+                level, msg, type=record.name, req_id=req_id
             )
+
+    @staticmethod
+    def get_req_id():
+        """
+        获取请求ID
+        """
+        try:
+            req = Request.get_current()
+            req_id = f" [{req.id}] "
+        except sanic.exceptions.ServerError:
+            req_id = " "
+        return req_id
 
     def highlight_sql(self, record: logging.LogRecord, message: str):
         """

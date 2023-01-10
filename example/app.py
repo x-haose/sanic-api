@@ -8,6 +8,7 @@ app = Sanic("Sanic-API", configure_logging=False)
 @app.get('/')
 async def index(request):
     logger.info("Sanic-API Example")
+    logger.info("测试i打印")
     return text("Sanic-API Example")
 
 

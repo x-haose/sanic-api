@@ -1,6 +1,9 @@
 from sanic import Sanic
+from sanic_ext import Extend
 
 from sanic_api import api, logger, openapi
+
+from .logger import LoggerExtend
 
 
 def init_api(app: Sanic):
@@ -12,6 +15,6 @@ def init_api(app: Sanic):
     Returns:
 
     """
-    logger.init(app)
+    Extend.register(logger.LoggerExtend)
     api.init(app)
     openapi.init(app)
