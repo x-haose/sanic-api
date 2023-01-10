@@ -1,18 +1,19 @@
-import json as py_json
 from abc import ABCMeta
+from functools import partial
 from dataclasses import dataclass
-from decimal import Decimal
 from typing import Any, Dict, Optional
 
-from orjson import dumps as orjson_dumps
+# noinspection PyUnresolvedReferences
+import ujson
 from pydantic import BaseModel
 from pydantic import ValidationError as PyDanticValidationError
-from sanic import HTTPResponse
+from sanic import HTTPResponse, Sanic
 from sanic.response import json
 
 from sanic_api.enum import ParamEnum, RespCodeEnum
-from sanic_api.exception import ServerException, ValidationError
+from sanic_api.exception import ValidationError
 from sanic_api.model import ListModel
+from sanic_api.utils import json_dumps
 
 
 @dataclass
@@ -32,19 +33,12 @@ class Response:
         """
         返回json格式的响应
         Args:
-            dumps: 序列化方法，默认使用orjson的序列化方法
+            dumps: 序列化方法，默认使用自定义的序列化方法
             **kwargs: 序列化方法的参数
 
         Returns:
             返回一个sanic的HTTPResponse
         """
-
-        def json_dumps(obj):
-            def _default(item):
-                if isinstance(item, Decimal):
-                    return float(item.to_eng_string())
-
-            return str(orjson_dumps(obj, default=_default), encoding="utf-8")
 
         if isinstance(self.data, ListModel):
             self.data = self.data.to_list()
@@ -53,11 +47,11 @@ class Response:
         else:
             self.data = self.data
 
-        dumps = dumps or json_dumps
+        dumps = dumps or partial(ujson.dumps, ensure_ascii=False, default=json_dumps)
         data = {
-            "code": self.server_code.value,
-            "message": self.message or self.server_code.desc,
-            "data": self.data,
+            self._get_tmp("code_tmp", 'code'): self.server_code.value,
+            self._get_tmp("msg_tmp", 'message'): self.message or self.server_code.desc,
+            self._get_tmp("data_tmp", 'data'): self.data,
         }
         return json(
             body=data,
@@ -66,6 +60,15 @@ class Response:
             dumps=dumps,
             **kwargs
         )
+
+    @staticmethod
+    def _get_tmp(key: str, default):
+        """
+        获取字段模板
+        """
+        app = Sanic.get_app()
+        sanic_api: dict = app.config.get("sanic_api", {})
+        return sanic_api.get(key, default)
 
 
 class API(metaclass=ABCMeta):
@@ -97,9 +100,7 @@ class API(metaclass=ABCMeta):
         if self.query_req:
             data["query"] = self.query_req.dict()
 
-        return py_json.dumps(
-            py_json.loads(orjson_dumps(data)), ensure_ascii=False, indent=4
-        )
+        return ujson.dumps(data, ensure_ascii=False, default=json_dumps, indent=4)
 
     def validate_params(self, req_data: dict, param_enum: ParamEnum):
         """
