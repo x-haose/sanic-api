@@ -55,6 +55,11 @@ def auto_doc(app: Sanic, loop):
             if operation_exclude or "openapi" in operation.tags:
                 continue
 
+            # 读取蓝图上面的 blueprint.ctx.desc 属性来代替name设置中文tag名
+            blueprint = app.blueprints[route_name.split('.')[0]]
+            blueprint_desc = blueprint.ctx.desc if hasattr(blueprint.ctx, 'desc') else blueprint.name
+            operation.tag(blueprint_desc)
+
             docstring = inspect.getdoc(_handler)
 
             if docstring and app.config.OAS_AUTODOC and operation_allow_autodoc:
