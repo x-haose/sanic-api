@@ -1,3 +1,5 @@
+from typing import Optional, Union
+
 from pydantic.fields import ModelPrivateAttr
 from pydantic.main import BaseModel
 
@@ -7,7 +9,9 @@ class ListModel(BaseModel):
     列表格式的响应模型
     """
 
-    _data_list: list = ModelPrivateAttr(default_factory=list)
+    _data_list: Optional[Union[ModelPrivateAttr, list]] = ModelPrivateAttr(
+        default_factory=list
+    )
 
     def add_data(self):
         """

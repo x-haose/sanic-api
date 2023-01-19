@@ -1,6 +1,6 @@
 [project]
 name = "sanic-api"
-version = "0.1.1"
+version = "0.2.0"
 description = "让您的sanic服务程序更好的支持API文档、参数校验、日志打印、响应规范等"
 authors = [
     { name = "昊色居士", email = "xhrtxh@gmail.com" },
@@ -10,8 +10,9 @@ dependencies = [
     "pydantic>=1.10.2",
     "sanic-ext>=22.9.1",
     "loguru>=0.6.0",
-    "orjson>=3.8.2",
     "pygments>=2.13.0",
+    "types-PyYAML>=6.0.12.2",
+    "ujson>=5.7.0",
 ]
 requires-python = ">=3.8"
 readme = "README.MD"
@@ -22,6 +23,10 @@ license = { text = "MIT" }
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"
+
+[tool.mypy]
+python_version = "3.8"
+ignore_missing_imports = true
 
 [tool.pdm]
 
@@ -37,12 +42,20 @@ dev = [
     "black>=22.10.0",
     # 导入格式化
     "isort>=5.10.1",
+    # 自动删除未使用的导入和未使用的变量
+    "autoflake>=2.0.0",
+    # 静态类型检查
+    "mypy>=0.991",
 ]
 
 [tool.pdm.scripts]
-# 格式化
-black = "black sanic_api"
+# 自动删除未使用的导入和未使用的变量
+autoflake = "autoflake --in-place --recursive sanic_api"
 # 导入
 isort = "isort sanic_api"
-# 同时执行上面两条
-style = { composite = ["black", "isort"] }
+# 格式化
+black = "black sanic_api"
+# 静态类型检查
+mypy = "mypy sanic_api"
+# 依次执行上面的命令
+check = { composite = ["autoflake", "isort", "black", "mypy"] }

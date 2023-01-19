@@ -17,7 +17,10 @@ def server_exception(request: Request, e):
     """
 
     return Response(
-        http_code=e.status_code, server_code=e.server_code, message=e.message, data=e.context
+        http_code=e.status_code,
+        server_code=e.server_code,
+        message=e.message,
+        data=e.context,
     ).json_resp()
 
 
@@ -51,5 +54,7 @@ def other_exception(request: Request, e):
 
     error_name = e.__class__.__name__
     return Response(
-        http_code=500, server_code=RespCodeEnum.FAILED, message=f"服务端业务发生未知异常：[{error_name}] {e}"
+        http_code=500,
+        server_code=RespCodeEnum.FAILED,
+        message=f"服务端业务发生未知异常：[{error_name}] {e}",
     ).json_resp()

@@ -19,7 +19,9 @@ class SanicHttp(Http):
             "host": "UNKNOWN",
             "request": "nil",
             "time": f"{dt:.4f} ms",
-            "req_args": "\n" + req.ctx.api.req_to_json() if hasattr(req.ctx, "api") else "",
+            "req_args": req.ctx.api.req_to_json()
+            if hasattr(req.ctx, "api")
+            else "",
         }
         if req is not None:
             if req.remote_addr or req.ip:
