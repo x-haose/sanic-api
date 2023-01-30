@@ -46,6 +46,8 @@ dev = [
     "autoflake>=2.0.0",
     # 静态类型检查
     "mypy>=0.991",
+    # ujson的类型补充
+    "types-ujson>=5.7.0.0",
 ]
 
 [tool.pdm.scripts]
