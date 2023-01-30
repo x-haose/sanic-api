@@ -56,9 +56,10 @@ def auto_doc(app: Sanic, loop):
                 continue
 
             # 读取蓝图上面的 blueprint.ctx.desc 属性来代替name设置中文tag名
-            blueprint = app.blueprints[route_name.split('.')[0]]
-            blueprint_desc = blueprint.ctx.desc if hasattr(blueprint.ctx, 'desc') else blueprint.name
-            operation.tag(blueprint_desc)
+            if len(route_name.split(".")) > 1:
+                blueprint = app.blueprints[route_name.split(".")[0]]
+                blueprint.ctx.desc = getattr(blueprint.ctx, "desc") or blueprint.name
+                operation.tag(blueprint.ctx.desc)
 
             docstring = inspect.getdoc(_handler)
 
