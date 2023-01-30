@@ -1,6 +1,6 @@
 from abc import ABCMeta
-from functools import partial
 from dataclasses import dataclass
+from functools import partial
 from typing import Any, Dict, Optional
 
 # noinspection PyUnresolvedReferences
@@ -49,9 +49,9 @@ class Response:
 
         dumps = dumps or partial(ujson.dumps, ensure_ascii=False, default=json_dumps)
         data = {
-            self._get_tmp("code_tmp", 'code'): self.server_code.value,
-            self._get_tmp("msg_tmp", 'msg'): self.message or self.server_code.desc,
-            self._get_tmp("data_tmp", 'data'): self.data,
+            self._get_tmp("code_tmp", "code"): self.server_code.value,
+            self._get_tmp("msg_tmp", "msg"): self.message or self.server_code.desc,
+            self._get_tmp("data_tmp", "data"): self.data,
         }
         return json(
             body=data,
