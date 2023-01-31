@@ -13,13 +13,16 @@ class SanicHttp(Http):
 
         dt = (req.ctx.et - req.ctx.st) * 1000
         size = getattr(self, "response_bytes_left", getattr(self, "response_size", -1))
+        req_args = (
+            f" args: {req.ctx.api.req_to_json()}" if hasattr(req.ctx, "api") else ""
+        )
         extra = {
             "status": getattr(res, "status", 0),
             "byte": self.format_size(size),
             "host": "UNKNOWN",
             "request": "nil",
             "time": f"{dt:.4f} ms",
-            "req_args": f" args: {req.ctx.api.req_to_json()}" if hasattr(req.ctx, "api") else "",
+            "req_args": req_args,
         }
         if req is not None:
             if req.remote_addr or req.ip:

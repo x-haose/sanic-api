@@ -2,7 +2,7 @@ from typing import Any, Optional
 
 from sanic.exceptions import SanicException
 
-from .enum import EnumBase, Field, RespCodeEnum
+from .enum import EnumBase, RespCodeEnum
 
 
 class ServerException(SanicException):
