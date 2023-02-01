@@ -2,14 +2,22 @@ from pydantic import BaseModel, Field
 from sanic import Sanic, text, Request
 from sanic.log import logger
 from sanic_api import init_api
+from sanic_api.enum import EnumBase
+from sanic_api.enum import EnumField
 from sanic_api.api import API
 
 app = Sanic("Sanic-API", configure_logging=False)
 
 
+class UserTypeEnum(EnumBase):
+    ADMIN = EnumField(value='admin', desc="管理员")
+    aa = 'ddddd'
+
+
 class UserModel(BaseModel):
     username: str = Field(title="用户名")
     password: str = Field(title="密码", description="密码，经过md5加密的")
+    type: UserTypeEnum = Field(title="用户类型", description=UserTypeEnum.to_desc())
 
 
 class AddUserReqModel(BaseModel):
