@@ -86,7 +86,9 @@ def auto_doc(app: Sanic, loop):
                 ).items():
                     specification.add_component("schemas", model_name, schema_model)
                 # noinspection PyProtectedMember
-                body_dict[mine_type]._fields['required'] = body_schema.get('required', [])
+                body_dict[mine_type]._fields["required"] = body_schema.get(
+                    "required", []
+                )
                 operation.body(body_dict)
 
             if api.query_req_type:

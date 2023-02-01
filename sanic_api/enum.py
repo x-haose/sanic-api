@@ -22,7 +22,7 @@ class EnumBase(Enum):
 
     @classmethod
     def _missing_(cls, value: object):
-        result = list(filter(lambda d: d.value == value, cls))
+        result = list(filter(lambda d: d.value == value, cls))  # type: ignore
         return result[0] if result else None
 
     @DynamicClassAttribute
