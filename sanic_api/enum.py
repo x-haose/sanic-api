@@ -6,7 +6,7 @@ from typing import Any
 
 
 @dataclass
-class EnumField(object):
+class EnumField:
     """
     枚举字段类
     """
@@ -21,12 +21,12 @@ class EnumBase(Enum):
     """
 
     @classmethod
-    def _missing_(cls, value: object):
+    def _missing_(cls, value: object) -> Any:
         result = list(filter(lambda d: d.value == value, cls))  # type: ignore
         return result[0] if result else None
 
     @DynamicClassAttribute
-    def value(self):
+    def value(self) -> Any:
         """
         获取枚举的值
         Returns:
@@ -37,7 +37,7 @@ class EnumBase(Enum):
         return self._value_
 
     @DynamicClassAttribute
-    def desc(self):
+    def desc(self) -> str:
         """
         获取枚举值的描述
         Returns:
@@ -49,11 +49,11 @@ class EnumBase(Enum):
             return ""
 
     @classmethod
-    def list(cls):
-        return list(map(lambda c: c.value, cls))
+    def list(cls) -> list:
+        return [c.value for c in cls]
 
     @classmethod
-    def to_desc(cls):
+    def to_desc(cls) -> str:
         data = {d.value: d.desc for d in cls}
         return json.dumps(data, ensure_ascii=False)
 

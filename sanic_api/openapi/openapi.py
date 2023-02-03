@@ -28,11 +28,9 @@ def auto_doc(app: Sanic, loop):
         method_handlers,
         host,
     ) in get_all_routes(app, config.OAS_URL_PREFIX):
-
         uri = uri if uri == "/" else uri.rstrip("/")
 
         for method, _handler in method_handlers:
-
             if (
                 (method == "OPTIONS" and app.config.OAS_IGNORE_OPTIONS)
                 or (method == "HEAD" and app.config.OAS_IGNORE_HEAD)
@@ -47,10 +45,10 @@ def auto_doc(app: Sanic, loop):
             api: API = api_cls()
 
             operation: OperationBuilder = OperationStore()[_handler]
-            operation_exclude = getattr(operation, "_exclude")
-            operation_default = getattr(operation, "_default")
-            operation_autodoc = getattr(operation, "_autodoc")
-            operation_allow_autodoc = getattr(operation, "_allow_autodoc")
+            operation_exclude = operation._exclude
+            operation_default = operation._default
+            operation_autodoc = operation._autodoc
+            operation_allow_autodoc = operation._allow_autodoc
 
             if operation_exclude or "openapi" in operation.tags:
                 continue
@@ -58,7 +56,7 @@ def auto_doc(app: Sanic, loop):
             # 读取蓝图上面的 blueprint.ctx.desc 属性来代替name设置中文tag名
             if len(route_name.split(".")) > 1:
                 blueprint = app.blueprints[route_name.split(".")[0]]
-                blueprint.ctx.desc = getattr(blueprint.ctx, "desc") or blueprint.name
+                blueprint.ctx.desc = blueprint.ctx.desc or blueprint.name
                 api.tags.insert(0, blueprint.ctx.desc)
 
             # 设置接口的标签和描述
@@ -130,10 +128,8 @@ def auto_doc(app: Sanic, loop):
 
             for _parameter in route_parameters:
                 if any(
-                    (
-                        param.fields["name"] == _parameter.name
-                        for param in operation.parameters
-                    )
+                    param.fields["name"] == _parameter.name
+                    for param in operation.parameters
                 ):
                     continue
 

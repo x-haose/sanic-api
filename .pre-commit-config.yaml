@@ -26,19 +26,6 @@ repos:
       - id: ruff
         args:
           - --fix
-  - repo: https://github.com/PyCQA/autoflake
-    rev: v2.0.1
-    hooks:
-      - id: autoflake
-        name: autoflake
-        language: python
-        args: [
-            "--in-place",
-            "--remove-all-unused-imports",
-            "--remove-unused-variables",
-            "--expand-star-imports",
-            "--ignore-init-module-imports",
-        ]
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: 'v0.991'
     hooks:

@@ -1,7 +1,8 @@
 from sanic.exceptions import NotFound
 from sanic_ext import Extension
 
-from ..exception import ServerException
+from sanic_api.api.exception import ServerException
+
 from .handle_exception import not_found, other_exception, server_exception
 from .validators import validators
 

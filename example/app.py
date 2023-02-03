@@ -1,17 +1,17 @@
 from pydantic import BaseModel, Field
-from sanic import Sanic, text, Request
+from sanic import Request, Sanic, text
 from sanic.log import logger
+
 from sanic_api import init_api
-from sanic_api.enum import EnumBase
-from sanic_api.enum import EnumField
 from sanic_api.api import API
+from sanic_api.enum import EnumBase, EnumField
 
 app = Sanic("Sanic-API", configure_logging=False)
 
 
 class UserTypeEnum(EnumBase):
-    ADMIN = EnumField(value='admin', desc="管理员")
-    aa = 'ddddd'
+    ADMIN = EnumField(value="admin", desc="管理员")
+    aa = "ddddd"
 
 
 class UserModel(BaseModel):
@@ -45,7 +45,7 @@ class UserAddApi(API):
     resp: AddUserRespModel
 
 
-@app.get('/')
+@app.get("/")
 async def index(request):
     logger.info("Sanic-API Example")
     return text("Sanic-API Example")
@@ -53,19 +53,14 @@ async def index(request):
 
 @app.route("/create_user", methods=["POST"])
 async def user_add(request: Request, api: UserAddApi):
-    api.resp = 1
     return api.json_resp()
 
 
 def main():
-    app.config['sanic_api'] = {
-        "data_tmp": 'd',
-        "code_tmp": 'c',
-        "msg_tmp": "m"
-    }
+    app.config["sanic_api"] = {"data_tmp": "d", "code_tmp": "c", "msg_tmp": "m"}
     init_api(app)
     app.run(access_log=True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
