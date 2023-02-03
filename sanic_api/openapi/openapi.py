@@ -59,7 +59,12 @@ def auto_doc(app: Sanic, loop):
             if len(route_name.split(".")) > 1:
                 blueprint = app.blueprints[route_name.split(".")[0]]
                 blueprint.ctx.desc = getattr(blueprint.ctx, "desc") or blueprint.name
-                operation.tag(blueprint.ctx.desc)
+                api.tags.insert(0, blueprint.ctx.desc)
+
+            # 设置接口的标签和描述
+            operation.tag(*api.tags)
+            tags_str = " ".join([f"[{tag}](/docs#tag/{tag})" for tag in api.tags])
+            operation.describe(description=f"### 标签: {tags_str}\n{api.description}")
 
             docstring = inspect.getdoc(_handler)
 

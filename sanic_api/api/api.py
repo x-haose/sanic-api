@@ -76,6 +76,8 @@ class API(metaclass=ABCMeta):
     form_req: Optional[BaseModel] = None
     query_req: Optional[BaseModel] = None
     resp: Optional[Any] = None
+    tags: list = []
+    description: ""
 
     def __init__(self):
         self.response_type = self.__class__.__annotations__.get("resp")
