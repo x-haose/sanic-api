@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.2.2] - 2023-02-03
+## [0.2.3] - 2023-02-03
 
 ### Fixed
 - 修复无蓝图的api接口blueprint.ctx.desc报错的问题
@@ -13,11 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - 请求接口无参数时访问日志中不打印 “args:”
+- 枚举基类字段类名称修改，避免重名
+
 
 ### Added
+- API接口类支持自定义接口标签和接口描述
 - 添加types-ujson包
 - 自动生成的文档支持识别必须和可选参数
-- 枚举基类字段类名称修改，避免重名
 - 枚举基类增加to_desc方法列出枚举的所有描述
 
 ## [0.2.0] - 2023-01-19
