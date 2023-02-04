@@ -16,6 +16,10 @@ from sanic_api.logger.sanic_http import SanicHttp
 
 
 class LoggerExtend(Extension):
+    """
+    处理日志的扩展
+    """
+
     name = "LoggerExtend"
 
     def startup(self, bootstrap) -> None:

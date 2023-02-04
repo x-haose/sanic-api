@@ -2,7 +2,7 @@ from typing import Any, Optional
 
 from sanic.exceptions import SanicException
 
-from .enum import EnumBase, Field, RespCodeEnum
+from sanic_api.enum import EnumBase, RespCodeEnum
 
 
 class ServerException(SanicException):
@@ -15,7 +15,7 @@ class ServerException(SanicException):
         context: Any = None,
         extra=None,
     ) -> None:
-        super(ServerException, self).__init__(
+        super().__init__(
             message=message,
             status_code=status_code,
             quiet=quiet,
@@ -39,6 +39,4 @@ class ValidationError(ServerException):
     """
 
     def __init__(self, errors: list, *args, **kwargs):
-        super(ValidationError, self).__init__(
-            server_code=RespCodeEnum.PARAM_FAILED, context=errors
-        )
+        super().__init__(server_code=RespCodeEnum.PARAM_FAILED, context=errors)

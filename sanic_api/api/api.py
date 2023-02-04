@@ -1,7 +1,7 @@
 from abc import ABCMeta
-from functools import partial
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from functools import partial
+from typing import Any, Callable, Dict, Optional
 
 # noinspection PyUnresolvedReferences
 import ujson
@@ -10,8 +10,8 @@ from pydantic import ValidationError as PyDanticValidationError
 from sanic import HTTPResponse, Sanic
 from sanic.response import json
 
+from sanic_api.api.exception import ValidationError
 from sanic_api.enum import ParamEnum, RespCodeEnum
-from sanic_api.exception import ValidationError
 from sanic_api.model import ListModel
 from sanic_api.utils import json_dumps
 
@@ -29,7 +29,9 @@ class Response:
     # 返回的数据
     data: Any = None
 
-    def json_resp(self, dumps=None, **kwargs) -> HTTPResponse:
+    def json_resp(
+        self, dumps: Optional[Callable[[Any], Any]] = None, **kwargs
+    ) -> HTTPResponse:
         """
         返回json格式的响应
         Args:
@@ -49,16 +51,16 @@ class Response:
 
         dumps = dumps or partial(ujson.dumps, ensure_ascii=False, default=json_dumps)
         data = {
-            self._get_tmp("code_tmp", 'code'): self.server_code.value,
-            self._get_tmp("msg_tmp", 'msg'): self.message or self.server_code.desc,
-            self._get_tmp("data_tmp", 'data'): self.data,
+            self._get_tmp("code_tmp", "code"): self.server_code.value,
+            self._get_tmp("msg_tmp", "msg"): self.message or self.server_code.desc,
+            self._get_tmp("data_tmp", "data"): self.data,
         }
         return json(
             body=data,
             status=self.http_code,
             headers=self.headers,
             dumps=dumps,
-            **kwargs
+            **kwargs,
         )
 
     @staticmethod
@@ -76,6 +78,8 @@ class API(metaclass=ABCMeta):
     form_req: Optional[BaseModel] = None
     query_req: Optional[BaseModel] = None
     resp: Optional[Any] = None
+    tags: list = []
+    description: str = ""
 
     def __init__(self):
         self.response_type = self.__class__.__annotations__.get("resp")
@@ -120,7 +124,7 @@ class API(metaclass=ABCMeta):
             elif param_enum == ParamEnum.FORM:
                 self.form_req = self.form_req_type(**req_data)
         except PyDanticValidationError as e:
-            raise ValidationError(e.errors())
+            raise ValidationError(e.errors()) from e
 
     def json_resp(
         self,

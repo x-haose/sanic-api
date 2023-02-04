@@ -166,6 +166,11 @@ version = "6.0.12.2"
 summary = "Typing stubs for PyYAML"
 
 [[package]]
+name = "types-ujson"
+version = "5.7.0.0"
+summary = "Typing stubs for ujson"
+
+[[package]]
 name = "typing-extensions"
 version = "4.4.0"
 requires_python = ">=3.7"
@@ -197,7 +202,7 @@ summary = "A small Python utility to set file creation time on Windows"
 
 [metadata]
 lock_version = "4.0"
-content_hash = "sha256:2d980979519fc95ab8c06d4ad981d1f228ff557dc2fba4d0a949251ee0a04ec5"
+content_hash = "sha256:661d1ffe087d9d80927b064caa53c7872689d14f2119d59d168b6a1ed62f5d65"
 
 [metadata.files]
 "aiofiles 22.1.0" = [
@@ -502,6 +507,10 @@ content_hash = "sha256:2d980979519fc95ab8c06d4ad981d1f228ff557dc2fba4d0a949251ee
 "types-pyyaml 6.0.12.2" = [
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/13/c2/aff0c123a4a8e4b360a52bb62019949fa691d02ca0fda1ac5010171d9d42/types_PyYAML-6.0.12.2-py3-none-any.whl", hash = "sha256:1e94e80aafee07a7e798addb2a320e32956a373f376655128ae20637adb2655b"},
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/98/f1/b811af145690f4585e5ef03ce961b9ed3e361ace950416bd577dfa6c4918/types-PyYAML-6.0.12.2.tar.gz", hash = "sha256:6840819871c92deebe6a2067fb800c11b8a063632eb4e3e755914e7ab3604e83"},
+]
+"types-ujson 5.7.0.0" = [
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/36/e8/f01bef424904709f0a92c7b11fa22e009f20e680fa0792b652824755ce4a/types-ujson-5.7.0.0.tar.gz", hash = "sha256:d7c001f668a2e1ac2decbafd2c42cc0bf58798a5cc3b5a3ee397b7ee37775919"},
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/c5/6a/6dc20a2b67ff8ff081d374beee835281cd16eb23e05411e515a0bbae2d6b/types_ujson-5.7.0.0-py3-none-any.whl", hash = "sha256:ad48848c3da10e8023e9e75b1833282c28568ea680938c271e34d4d1426be816"},
 ]
 "typing-extensions 4.4.0" = [
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/0b/8e/f1a0a5a76cfef77e1eb6004cb49e5f8d72634da638420b9ea492ce8305e8/typing_extensions-4.4.0-py3-none-any.whl", hash = "sha256:16fa4864408f655d35ec496218b85f79b3437c829e93320c7c9215ccfd92489e"},

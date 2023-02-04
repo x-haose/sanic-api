@@ -1,7 +1,7 @@
 [project]
 name = "sanic-api"
-version = "0.2.0"
-description = "让您的sanic服务程序更好的支持API文档、参数校验、日志打印、响应规范等"
+version = "0.2.3"
+description = "Sanic 框架实用API工具集，拥有自动生成文档、参数校验、配置的导入、日志功能的优化等功能，更好的助力接口的开发"
 authors = [
     { name = "昊色居士", email = "xhrtxh@gmail.com" },
 ]
@@ -24,9 +24,59 @@ license = { text = "MIT" }
 requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"
 
+[tool.isort]
+profile = "black"
+
 [tool.mypy]
 python_version = "3.8"
 ignore_missing_imports = true
+
+[tool.ruff]
+# Enable Pyflakes `E` and `F` codes by default.
+select = [
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # pyflakes
+    "C", # flake8-comprehensions
+    "B", # flake8-bugbear
+]
+ignore = [
+    "E501", # line too long, handled by black
+    "B008", # do not perform function calls in argument defaults
+    "C901", # too complex
+]
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+# Same as Black.
+line-length = 120
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
 
 [tool.pdm]
 
@@ -46,6 +96,8 @@ dev = [
     "autoflake>=2.0.0",
     # 静态类型检查
     "mypy>=0.991",
+    # ujson的类型补充
+    "types-ujson>=5.7.0.0",
 ]
 
 [tool.pdm.scripts]

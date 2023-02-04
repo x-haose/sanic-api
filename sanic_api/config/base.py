@@ -10,7 +10,7 @@ from pydantic.env_settings import SettingsSourceCallable
 from sanic_api.utils import getpath_by_root
 
 
-class CustomSettingsSource(object):
+class CustomSettingsSource:
     """
     自定义的配置文件来源基类
     """
