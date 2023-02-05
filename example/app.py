@@ -1,12 +1,16 @@
-from pydantic import BaseModel, Field
-from sanic import Request, Sanic, text
-from sanic.log import logger
+from pydantic.fields import Field
+from pydantic.main import BaseModel
+from sanic import Blueprint, Request, Sanic, text
+from sanic.worker.loader import AppLoader
 
 from sanic_api import init_api
 from sanic_api.api import API
 from sanic_api.enum import EnumBase, EnumField
 
-app = Sanic("Sanic-API", configure_logging=False)
+app = Sanic(name="test", configure_logging=False)
+
+user_bp = Blueprint("user", url_prefix="/user")
+user_bp.ctx.desc = "用户"
 
 
 class UserTypeEnum(EnumBase):
@@ -43,24 +47,32 @@ class UserAddApi(API):
 
     json_req: AddUserReqModel
     resp: AddUserRespModel
+    description = "这是添加用户API接口"
+    tags = ["弃用"]
 
 
 @app.get("/")
-async def index(request):
-    logger.info("Sanic-API Example")
-    return text("Sanic-API Example")
+def index(r):
+    return text("server")
 
 
-@app.route("/create_user", methods=["POST"])
+@user_bp.route("/create_user", methods=["POST"])
 async def user_add(request: Request, api: UserAddApi):
+    api.resp.uid = 1
+
     return api.json_resp()
 
 
 def main():
-    app.config["sanic_api"] = {"data_tmp": "d", "code_tmp": "c", "msg_tmp": "m"}
+    api_blueprint = Blueprint.group(url_prefix="/api")
+    api_blueprint.append(user_bp)
+    app.blueprint(api_blueprint)
     init_api(app)
-    app.run(access_log=True)
+    return app
 
 
 if __name__ == "__main__":
-    main()
+    loader = AppLoader(factory=main)
+    app = loader.load()
+    app.prepare(port=5277, debug=True)
+    Sanic.serve(app, app_loader=loader)
