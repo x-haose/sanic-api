@@ -11,7 +11,6 @@ dependencies = [
     "sanic-ext>=22.9.1",
     "loguru>=0.6.0",
     "pygments>=2.13.0",
-    "types-PyYAML>=6.0.12.2",
     "ujson>=5.7.0",
 ]
 requires-python = ">=3.8"
@@ -80,34 +79,18 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.pdm]
 
+[tool.pdm.dev-dependencies]
+dev = [
+    "pre-commit>=3.0.4",
+    "types-ujson>=5.7.0.0",
+    "types-PyYAML>=6.0.12.2"
+]
+
 [[tool.pdm.source]]
 name = "pypi"
 url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 verify_ssl = true
 
 
-[tool.pdm.dev-dependencies]
-dev = [
-    # 代码格式化
-    "black>=22.10.0",
-    # 导入格式化
-    "isort>=5.10.1",
-    # 自动删除未使用的导入和未使用的变量
-    "autoflake>=2.0.0",
-    # 静态类型检查
-    "mypy>=0.991",
-    # ujson的类型补充
-    "types-ujson>=5.7.0.0",
-]
-
 [tool.pdm.scripts]
-# 自动删除未使用的导入和未使用的变量
-autoflake = "autoflake --in-place --recursive sanic_api"
-# 导入
-isort = "isort sanic_api"
-# 格式化
-black = "black sanic_api"
-# 静态类型检查
-mypy = "mypy sanic_api"
-# 依次执行上面的命令
-check = { composite = ["autoflake", "isort", "black", "mypy"] }
+check = "pdm run pre-commit run --all-files"
