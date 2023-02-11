@@ -1,7 +1,8 @@
 import os
-from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
+
+import orjson
 
 
 def getpath_by_root(path: str) -> Path:
@@ -19,16 +20,24 @@ def getpath_by_root(path: str) -> Path:
     return full_path
 
 
-def json_dumps(item):
+def json_dumps(data: dict, default=None) -> str:
     """
-    自定义json的dump
+    调用orjson进行dumps
     Args:
-        item: key
+        data: 数据
+        default: 数量处理方法
 
     Returns:
-
+        返回json字符串
     """
-    if isinstance(item, Decimal):
-        return float(item.to_eng_string())
-    if isinstance(item, datetime):
-        return item.isoformat()
+
+    def _default(item):
+        if isinstance(item, Decimal):
+            return float(item.to_eng_string())
+
+    json_bytes = orjson.dumps(
+        data,
+        default=default or _default,
+        option=orjson.OPT_APPEND_NEWLINE | orjson.OPT_INDENT_2,
+    )
+    return json_bytes.decode("utf-8")
