@@ -12,6 +12,7 @@ dependencies = [
     "loguru>=0.6.0",
     "pygments>=2.13.0",
     "ujson>=5.7.0",
+    "orjson>=3.8.6",
 ]
 requires-python = ">=3.8"
 readme = "README.MD"
