@@ -1,8 +1,11 @@
 import os
 from decimal import Decimal
 from pathlib import Path
+from typing import Optional
 
 import orjson
+from sanic import Request
+from sanic.exceptions import ServerError as SanicServerError
 
 
 def getpath_by_root(path: str) -> Path:
@@ -41,3 +44,13 @@ def json_dumps(data: dict, default=None) -> str:
         option=orjson.OPT_APPEND_NEWLINE | orjson.OPT_INDENT_2,
     )
     return json_bytes.decode("utf-8")
+
+
+def get_current_request() -> Optional[Request]:
+    """ "
+    获取当前请求
+    """
+    try:
+        return Request.get_current()
+    except SanicServerError:
+        return None
