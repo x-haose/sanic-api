@@ -3,7 +3,7 @@ from pydantic import Field
 from .base import SettingsBase
 
 
-class SanicApi(SettingsBase):
+class SanicApiConfig(SettingsBase):
     """
     sanic_api 框架需要的配置
     """
