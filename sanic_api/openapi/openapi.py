@@ -16,7 +16,7 @@ from sanic_api.api.validators import get_handler_param
 from sanic_api.model import ListModel
 
 
-# noinspection PyUnusedLocal
+# noinspection PyUnusedLocal,PyProtectedMember
 def auto_doc(app: Sanic, loop):
     config = app.config
     specification = SpecificationBuilder()
@@ -100,23 +100,22 @@ def auto_doc(app: Sanic, loop):
                 ].items():  # type: (str, dict)
                     operation.parameter(k, Schema(**v))
 
-            if api.response_type:
-                if issubclass(api.response_type, BaseModel):
-                    schema: Schema = Object(
-                        api.response_type.schema(
-                            ref_template="#/components/schemas/{model}"
-                        )["properties"]
-                    )
-                    if issubclass(api.response_type, ListModel):
-                        schema = Array(schema)
-                    operation.response(
-                        status=200,
-                        content={"application/json": schema},
-                        description="成功",
-                    )
-                    specification.add_component(
-                        "schemas", api.response_type.__name__, schema
-                    )
+            if api.response_type and issubclass(api.response_type, BaseModel):
+                schema: Schema = Object(
+                    api.response_type.schema(
+                        ref_template="#/components/schemas/{model}"
+                    )["properties"]
+                )
+                if issubclass(api.response_type, ListModel):
+                    schema = Array(schema)
+                operation.response(
+                    status=200,
+                    content={"application/json": schema},
+                    description="成功",
+                )
+                specification.add_component(
+                    "schemas", api.response_type.__name__, schema
+                )
 
             operation_default["operationId"] = f"{method.lower()}~{route_name}"
             operation_default["summary"] = clean_route_name(route_name)
