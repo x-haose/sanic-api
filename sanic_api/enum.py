@@ -76,3 +76,13 @@ class ParamEnum(EnumBase):
     JSON = EnumField("json")
     FORM = EnumField("form")
     QUERY = EnumField("query")
+
+
+class RunModeEnum(EnumBase):
+    """
+    运行模式
+    """
+
+    DEV = EnumField("dev", desc="开发模式。相当于debug模式加自动重载")
+    DEBUG = EnumField("debug", desc="调试模式。单workers启动。输出将更加详细，并将禁用多个运行时优化")
+    PRODUCTION = EnumField("production", desc="生产模式。如未指定workers数量，则自动使用fast模式启动。")

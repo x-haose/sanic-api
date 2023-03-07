@@ -46,7 +46,7 @@ class IniSettingsSource(CustomSettingsSource):
 
 class YamlSettingsSource(CustomSettingsSource):
     """
-    ini文件来源导入配置项
+    Yaml文件来源导入配置项
     """
 
     def __call__(self, settings: BaseSettings) -> Dict[str, Any]:
