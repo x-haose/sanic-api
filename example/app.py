@@ -1,78 +1,120 @@
-from pydantic.fields import Field
-from pydantic.main import BaseModel
-from sanic import Blueprint, Request, Sanic, text
-from sanic.worker.loader import AppLoader
+import os
+import re
+from glob import glob
+from importlib import import_module
+from inspect import getmembers
+from pathlib import Path
+from typing import Any, Dict
 
+from sanic import Blueprint, Sanic
+from sanic.blueprint_group import BlueprintGroup
+from sanic.log import logger
+
+from example.settings import settings
 from sanic_api import init_api
-from sanic_api.api import API
-from sanic_api.enum import EnumBase, EnumField
-
-app = Sanic(name="test", configure_logging=False)
-
-user_bp = Blueprint("user", url_prefix="/user")
-user_bp.ctx.desc = "用户"
 
 
-class UserTypeEnum(EnumBase):
-    ADMIN = EnumField(value="admin", desc="管理员")
-    aa = "ddddd"
-
-
-class UserModel(BaseModel):
-    username: str = Field(title="用户名")
-    password: str = Field(title="密码", description="密码，经过md5加密的")
-    type: UserTypeEnum = Field(title="用户类型", description=UserTypeEnum.to_desc())
-
-
-class AddUserReqModel(BaseModel):
+def init_blueprint(sanic_app: Sanic):
     """
-    添加请求参数
+    初始化蓝图
+    Returns:
+
+    """
+    # app 名称
+    app_name = Path(os.getcwd()).parent.name
+    # 程序顶层名称
+    parent_name: str = os.getcwd().split("/")[-1]
+    # api层名称
+    base_api_name: str = "api"
+    # api层模块名称
+    base_api_module_name: str = f"{parent_name}.{base_api_name}"
+    # api层模块
+    base_api_module = import_module(base_api_module_name, sanic_app.__module__)
+    # api层目录
+    base_api_dir = Path(str(base_api_module.__file__)).parent
+
+    # 所有路由组的字典
+    blueprint_group: Dict[str, BlueprintGroup] = {}
+
+    # 遍历所有__init__文件找到所有蓝图
+    for path in glob(f"{base_api_dir}/**/__init__.py", recursive=True):
+        # 蓝图所在上层的模块
+        modules = re.findall(rf"{app_name}/(.+?)/__", path)[0].split("/")
+        specmod = import_module(".".join(modules), sanic_app.__module__)
+
+        # 获取该模块下的所有蓝图
+        blueprints = [
+            m[1] for m in getmembers(specmod, lambda o: isinstance(o, Blueprint))
+        ]
+
+        blueprint_modules = (
+            modules[::-1][1:-1] if modules[-1] != "api" else modules[::-1][:-1]
+        )
+        for index, m in enumerate(blueprint_modules):
+            blueprint_group[m] = blueprint_group.get(m, Blueprint.group(url_prefix=m))
+            if index == 0:
+                blueprint_group[m].extend(blueprints)
+            else:
+                prev_bg: Any = blueprint_group.get(blueprint_modules[index - 1])
+                blueprint_group[m].append(prev_bg)
+
+    sanic_app.blueprint(blueprint_group[base_api_name])
+
+
+async def main_process_start(sanic_app: Sanic, loop):
+    """
+    主进程启动之前调用
+    Args:
+        sanic_app: application
+        loop: event loop
+
+    Returns:
+
+    """
+    sanic_cfg = settings.sanic.dict(by_alias=True)
+    sanic_app.config.update(sanic_cfg)
+    logger.info("服务启动")
+
+
+async def main_process_stop(sanic_app: Sanic, loop):
+    """
+    主进程停止之后调用
+    Args:
+        sanic_app: application
+        loop: event loop
+
+    Returns:
+
     """
 
-    user: UserModel = Field(title="用户信息")
+    logger.info("服务停止")
 
 
-class AddUserRespModel(BaseModel):
+async def before_server_start(sanic_app: Sanic, loop):
     """
-    响应参数
+    worker启动之前调用
+    Args:
+        sanic_app: application
+        loop: event loop
+
+    Returns:
+
     """
+    logger.info(f"Worler {sanic_app.m.pid} 启动")
 
-    uid: int = Field(default=None, title="用户ID", description="创建用户的用户ID")
 
-
-class UserAddApi(API):
+def app_factory():
     """
-    添加用户API
+    app 工厂方法
+    Returns:
+
     """
+    app = Sanic(name="test", configure_logging=False)
+    app.main_process_start(main_process_start)
+    app.main_process_stop(main_process_stop)
+    app.before_server_start(before_server_start)
 
-    json_req: AddUserReqModel
-    resp: AddUserRespModel
-    description = "这是添加用户API接口"
-    tags = ["弃用"]
-
-
-@app.get("/")
-def index(r):
-    return text("server")
-
-
-@user_bp.route("/create_user", methods=["POST"])
-async def user_add(request: Request, api: UserAddApi):
-    api.resp.uid = 1
-
-    return api.json_resp()
-
-
-def main():
-    api_blueprint = Blueprint.group(url_prefix="/api")
-    api_blueprint.append(user_bp)
-    app.blueprint(api_blueprint)
+    init_blueprint(app)
     init_api(app)
+
     return app
-
-
-if __name__ == "__main__":
-    loader = AppLoader(factory=main)
-    app = loader.load()
-    app.prepare(port=5277, debug=True)
-    Sanic.serve(app, app_loader=loader)
