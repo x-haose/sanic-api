@@ -112,7 +112,7 @@ summary = "YAML parser and emitter for Python"
 
 [[package]]
 name = "sanic"
-version = "22.9.1"
+version = "22.12.0"
 requires_python = ">=3.7"
 summary = "A web server and web framework that's written to go fast. Build fast. Run fast."
 dependencies = [
@@ -121,13 +121,13 @@ dependencies = [
     "multidict<7.0,>=5.0",
     "sanic-routing>=22.8.0",
     "ujson>=1.35; sys_platform != \"win32\" and implementation_name == \"cpython\"",
-    "uvloop>=0.5.3; sys_platform != \"win32\" and implementation_name == \"cpython\"",
+    "uvloop>=0.15.0; sys_platform != \"win32\" and implementation_name == \"cpython\"",
     "websockets>=10.0",
 ]
 
 [[package]]
 name = "sanic-ext"
-version = "22.9.1"
+version = "22.12.0"
 summary = "Extend your Sanic installation with some core functionality."
 dependencies = [
     "pyyaml>=3.0.0",
@@ -197,7 +197,7 @@ summary = "A small Python utility to set file creation time on Windows"
 
 [metadata]
 lock_version = "4.0"
-content_hash = "sha256:9322b5412c4fa43e600a896b9402b1e3edffcf5d7cd9bb183bb01b78a09e3b6b"
+content_hash = "sha256:46601c2f71527261e93efea1a5a59c758ed963f05b5feecf17a1138f130fdd9f"
 
 [metadata.files]
 "aiofiles 22.1.0" = [
@@ -474,13 +474,13 @@ content_hash = "sha256:9322b5412c4fa43e600a896b9402b1e3edffcf5d7cd9bb183bb01b78a
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/f8/54/799b059314b13e1063473f76e908f44106014d18f54b16c83a16edccd5ec/PyYAML-6.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:d4b0ba9512519522b118090257be113b9468d804b19d63c71dbcf4a48fa32358"},
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/fc/48/531ecd926fe0a374346dd811bf1eda59a95583595bb80eadad511f3269b8/PyYAML-6.0-cp311-cp311-win32.whl", hash = "sha256:bfaef573a63ba8923503d27530362590ff4f576c626d86a9fed95822a8255fd7"},
 ]
-"sanic 22.9.1" = [
-    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/77/c7/8862b9953e92f3a4654f5828575f39f95a22e732c47f8775fc280538cd91/sanic-22.9.1-py3-none-any.whl", hash = "sha256:d8905ee1c72759c7b37b1638c3b2b6656573d38156a82a85fd020532749029c1"},
-    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/b4/31/66ef9556b15963f722acabcb8eddfdda776e0c1edad91d2e39d2bc4d9dfd/sanic-22.9.1.tar.gz", hash = "sha256:9793919827f3753fd16433c8750625472f1a08e2147d6870bb7ff94ab12caaea"},
+"sanic 22.12.0" = [
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/80/5c/91c44dd9daf62f0068a372d9c3a12945bfcb36eb22aa1b1bfc81ecc0e6e1/sanic-22.12.0-py3-none-any.whl", hash = "sha256:84edf46cc17d13264ccec0ae6622e43087498f95644dc336ade74a2d5e6c88cb"},
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/c8/6d/77a3e60b8257785f45f9faee61d00411f534749efe1f21bc570d9781f565/sanic-22.12.0.tar.gz", hash = "sha256:e5f81115f838956957046b6c52e7a08c1bd6e8ff530ee1376471eaf1579bfffa"},
 ]
-"sanic-ext 22.9.1" = [
-    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/3a/07/abaa56d4ce0b5c8a302039294835e46c52ad172e0b9ff752c3bbf8a58927/sanic-ext-22.9.1.tar.gz", hash = "sha256:af4ed519c177a590229d5056a997ea556177294cca00db580efb1b8717ecead8"},
-    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/f0/e9/72dcd7ddd4c1c8d61fe0c5b8871b2c72da6285d237f98dd226bf3ddc05a9/sanic_ext-22.9.1-py3-none-any.whl", hash = "sha256:84515c7b8f2ec2c22c25fbeebdbf473e6e10fe224fc9c6767a1d3caa384266a7"},
+"sanic-ext 22.12.0" = [
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/94/f4/3728a8f45a083527dcd4e9f855ab138b4760172232d3d123d25c90cf0ec3/sanic_ext-22.12.0-py3-none-any.whl", hash = "sha256:a090d2ae083fc81747beb3320dcac5cc796515a1be560ea7bc4c27aca378d490"},
+    {url = "https://pypi.tuna.tsinghua.edu.cn/packages/9e/13/c96ecd852660d9d4f3f90ae043be9171264c405a763ad140f6af7c538a67/sanic-ext-22.12.0.tar.gz", hash = "sha256:f7e2d37d6d2656370ca321a66098fa3510ca523b3ece67862d8ef26ab44e70cc"},
 ]
 "sanic-routing 22.8.0" = [
     {url = "https://pypi.tuna.tsinghua.edu.cn/packages/54/e9/8cfebc8868c41e826c5f402f10a478bf02315ae2a966642fa002d06db395/sanic_routing-22.8.0-py3-none-any.whl", hash = "sha256:9a928ed9e19a36bc019223be90a5da0ab88cdd76b101e032510b6a7073c017e9"},
