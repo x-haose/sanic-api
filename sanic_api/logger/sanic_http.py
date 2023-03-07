@@ -1,5 +1,8 @@
+from sanic import Request
 from sanic.http import Http
 from sanic.log import access_logger
+
+from sanic_api.utils import json_dumps
 
 
 class SanicHttp(Http):
@@ -13,16 +16,14 @@ class SanicHttp(Http):
 
         dt = (req.ctx.et - req.ctx.st) * 1000
         size = getattr(self, "response_bytes_left", getattr(self, "response_size", -1))
-        req_args = (
-            f" args: {req.ctx.api.req_to_json()}" if hasattr(req.ctx, "api") else ""
-        )
+        req_args = self.get_req_args(req)
         extra = {
             "status": getattr(res, "status", 0),
             "byte": self.format_size(size),
             "host": "UNKNOWN",
             "request": "nil",
             "time": f"{dt:.4f} ms",
-            "req_args": req_args,
+            "req_args": f" args: {req_args}" if req_args else "",
         }
         if req is not None:
             if req.remote_addr or req.ip:
@@ -41,3 +42,27 @@ class SanicHttp(Http):
                 return f"{size:3.1f} {count}"
             size /= 1024.0
         return f"{size:3.1f} YB"
+
+    def get_req_args(self, request: Request) -> str:
+        """
+        获取请求参数
+        Args:
+            request: 请求
+
+        Returns:
+            返回具有 json、query、form参数的json
+        """
+        data = {}
+        for attr in ["args", "form"]:
+            attr_data = {}
+            for k, v in getattr(request, attr).items():
+                if type(v) == list and len(v) == 1:
+                    attr_data[k] = v[0]
+                else:
+                    attr_data[k] = v
+            if attr_data:
+                data[attr] = attr_data
+        if request.json:
+            data["json"] = request.json
+
+        return json_dumps(data) if data else ""

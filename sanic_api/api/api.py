@@ -1,10 +1,8 @@
+import functools
 from abc import ABCMeta
 from dataclasses import dataclass
-from functools import partial
 from typing import Any, Callable, Dict, Optional
 
-# noinspection PyUnresolvedReferences
-import ujson
 from pydantic import BaseModel
 from pydantic import ValidationError as PyDanticValidationError
 from sanic import HTTPResponse, Sanic
@@ -29,14 +27,11 @@ class Response:
     # 返回的数据
     data: Any = None
 
-    def json_resp(
-        self, dumps: Optional[Callable[[Any], Any]] = None, **kwargs
-    ) -> HTTPResponse:
+    def json_resp(self, default: Optional[Callable[[Any], Any]] = None) -> HTTPResponse:
         """
         返回json格式的响应
         Args:
-            dumps: 序列化方法，默认使用自定义的序列化方法
-            **kwargs: 序列化方法的参数
+            default: json数据处理方法
 
         Returns:
             返回一个sanic的HTTPResponse
@@ -49,7 +44,6 @@ class Response:
         else:
             self.data = self.data
 
-        dumps = dumps or partial(ujson.dumps, ensure_ascii=False, default=json_dumps)
         data = {
             self._get_tmp("code_tmp", "code"): self.server_code.value,
             self._get_tmp("msg_tmp", "msg"): self.message or self.server_code.desc,
@@ -59,8 +53,7 @@ class Response:
             body=data,
             status=self.http_code,
             headers=self.headers,
-            dumps=dumps,
-            **kwargs,
+            dumps=functools.partial(json_dumps, default=default),
         )
 
     @staticmethod
@@ -94,17 +87,6 @@ class API(metaclass=ABCMeta):
             )
         except PyDanticValidationError:
             pass
-
-    def req_to_json(self):
-        data = {}
-        if self.json_req:
-            data["json"] = self.json_req.dict()
-        elif self.form_req:
-            data["form"] = self.form_req.dict()
-        if self.query_req:
-            data["query"] = self.query_req.dict()
-
-        return ujson.dumps(data, ensure_ascii=False, default=json_dumps, indent=4)
 
     def validate_params(self, req_data: dict, param_enum: ParamEnum):
         """

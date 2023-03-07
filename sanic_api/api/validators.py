@@ -7,13 +7,12 @@ from sanic_api.api.exception import ValidationInitError
 from sanic_api.enum import ParamEnum
 
 
-def _do_validation(param_enum: ParamEnum, api: API, request: Request):
+def _do_validation(param_enum: ParamEnum, api: API, data: dict):
     if param_enum == ParamEnum.JSON:
-        req_data = dict(request.json)
+        req_data = data
     elif param_enum in [ParamEnum.QUERY, param_enum.FORM]:
         req_data = {}
-        attr = "args" if param_enum == ParamEnum.QUERY else "form"
-        for k, v in getattr(request, attr).items():
+        for k, v in data.items():
             if type(v) == list and len(v) == 1:
                 req_data[k] = v[0]
             else:
@@ -48,6 +47,10 @@ async def validators(request: Request):
     Returns:
 
     """
+    # 如果执行中间价直接就发生了异常则直接抛出
+    if hasattr(request.ctx, "exception"):
+        raise request.ctx.exception
+
     _, handler, _ = request.app.router.get(
         request.path,
         request.method,
@@ -62,12 +65,12 @@ async def validators(request: Request):
     if api.json_req_type and api.query_req_type:
         raise ValidationInitError("不能同时存在json参数和form参数")
 
-    if api.json_req_type:
-        _do_validation(param_enum=ParamEnum.JSON, api=api, request=request)
-    elif api.form_req_type:
-        _do_validation(param_enum=ParamEnum.FORM, api=api, request=request)
-    if api.query_req_type:
-        _do_validation(param_enum=ParamEnum.QUERY, api=api, request=request)
+    if api.json_req_type and request.json:
+        _do_validation(param_enum=ParamEnum.JSON, api=api, data=request.json)
+    elif api.form_req_type and request.form:
+        _do_validation(param_enum=ParamEnum.FORM, api=api, data=request.form)
+    if api.query_req_type and request.query_args:
+        _do_validation(param_enum=ParamEnum.QUERY, api=api, data=request.args)
 
     request.match_info.update({"api": api})
     request.ctx.api = api

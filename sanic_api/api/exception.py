@@ -3,6 +3,7 @@ from typing import Any, Optional
 from sanic.exceptions import SanicException
 
 from sanic_api.enum import EnumBase, RespCodeEnum
+from sanic_api.utils import get_current_request
 
 
 class ServerException(SanicException):
@@ -25,6 +26,9 @@ class ServerException(SanicException):
         self.server_code = server_code or RespCodeEnum.FAILED
         self.message = message or self.server_code.desc
         self.status_code = status_code or 200
+        req = get_current_request()
+        if req:
+            req.ctx.exception = self
 
 
 class ValidationInitError(ServerException):

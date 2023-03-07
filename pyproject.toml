@@ -6,12 +6,13 @@ authors = [
     { name = "昊色居士", email = "xhrtxh@gmail.com" },
 ]
 dependencies = [
-    "sanic>=22.9.1",
+    "sanic>=22.12",
     "pydantic>=1.10.2",
-    "sanic-ext>=22.9.1",
+    "sanic-ext>=22.12",
     "loguru>=0.6.0",
     "pygments>=2.13.0",
     "ujson>=5.7.0",
+    "orjson>=3.8.6",
 ]
 requires-python = ">=3.8"
 readme = "README.MD"
