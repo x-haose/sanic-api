@@ -18,6 +18,4 @@ class SanicConfig(SettingsBase):
     background_log: bool = Field(default=True, alias="LOGGING", env="LOGGING")
 
     # OpenAPI规范文档的URL前缀
-    oas_url_prefix: str = Field(
-        default="docs", alias="OAS_URL_PREFIX", env="OAS_URL_PREFIX"
-    )
+    oas_url_prefix: str = Field(default="docs", alias="OAS_URL_PREFIX", env="OAS_URL_PREFIX")

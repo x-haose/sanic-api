@@ -38,9 +38,7 @@ class InterceptHandler(logging.StreamHandler):
 
         if "Dispatching signal" not in msg:
             etxra_data = {"type": record.name, "req_id": req_id}
-            logger.bind(**etxra_data).opt(depth=depth, exception=record.exc_info).log(
-                level, msg
-            )
+            logger.bind(**etxra_data).opt(depth=depth, exception=record.exc_info).log(level, msg)
 
     @staticmethod
     def get_req_id():
