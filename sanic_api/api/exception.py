@@ -10,12 +10,12 @@ class ServerException(SanicException):
     def __init__(
         self,
         message: Optional[str] = None,
-        server_code: Optional[EnumBase] = None,
         status_code: Optional[int] = None,
+        server_code: Optional[EnumBase] = None,
         quiet: Optional[bool] = None,
         context: Any = None,
         extra=None,
-    ) -> None:
+    ):
         super().__init__(
             message=message,
             status_code=status_code,

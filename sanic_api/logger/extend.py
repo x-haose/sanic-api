@@ -9,6 +9,7 @@ from loguru import logger
 from loguru._defaults import env
 from sanic import HTTPResponse, Request
 from sanic.server import HttpProtocol
+from sanic_api.enum import RunModeEnum
 from sanic_ext import Extension
 
 from sanic_api.logger.config import InterceptHandler
@@ -26,7 +27,7 @@ class LoggerExtend(Extension):
         if not self.included():
             return
 
-        is_debug = self.app.config.get("debug")
+        is_debug = self.app.config.get("mode") in [RunModeEnum.DEBUG, RunModeEnum.DEV],
         log_level = logging.DEBUG if is_debug else logging.INFO
         log_format = env(
             "LOGURU_FORMAT",

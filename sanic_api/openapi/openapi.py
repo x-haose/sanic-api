@@ -10,12 +10,12 @@ from sanic_ext.extensions.openapi.types import Array, Object
 from sanic_ext.utils.route import get_all_routes
 
 from sanic_api.api import API
+from sanic_api.api.model import ListRespModel
 from sanic_api.api.validators import get_handler_param
-from sanic_api.model import ListModel
 
 
 # noinspection PyProtectedMember
-def auto_doc(app: Sanic, _):
+def auto_doc(app: Sanic):
     config = app.config
     specification = SpecificationBuilder()
 
@@ -71,43 +71,32 @@ def auto_doc(app: Sanic, _):
                 body_type, mine_type, body_dict = ["", "", {}]
 
             if body_type:
-                body_schema: dict = body_type.schema(
-                    ref_template="#/components/schemas/{model}"
-                )
+                body_schema: dict = body_type.schema(ref_template="#/components/schemas/{model}")
                 body_dict = {
                     mine_type: Object(body_schema["properties"]),
                 }
-                for model_name, schema_model in body_schema.get(
-                    "definitions", {}
-                ).items():
+                for model_name, schema_model in body_schema.get("definitions", {}).items():
                     specification.add_component("schemas", model_name, schema_model)
-                body_dict[mine_type]._fields["required"] = body_schema.get(
-                    "required", []
-                )
+                body_dict[mine_type]._fields["required"] = body_schema.get("required", [])
                 operation.body(body_dict)
 
             if api.query_req_type:
-                for k, v in api.query_req_type.schema()[
-                    "properties"
-                ].items():  # type: (str, dict)
+                for k, v in api.query_req_type.schema()["properties"].items():  # type: (str, dict)
                     operation.parameter(k, Schema(**v))
 
             if api.response_type and issubclass(api.response_type, BaseModel):
-                schema: Schema = Object(
-                    api.response_type.schema(
-                        ref_template="#/components/schemas/{model}"
-                    )["properties"]
-                )
-                if issubclass(api.response_type, ListModel):
+                resp_schema = api.response_type.schema(ref_template="#/components/schemas/{model}")
+                schema: Schema = Object(resp_schema["properties"])
+                if issubclass(api.response_type, ListRespModel):
                     schema = Array(schema)
+                for model_name, schema_model in resp_schema.get("definitions", {}).items():
+                    specification.add_component("schemas", model_name, schema_model)
                 operation.response(
                     status=200,
                     content={"application/json": schema},
                     description="成功",
                 )
-                specification.add_component(
-                    "schemas", api.response_type.__name__, schema
-                )
+                specification.add_component("schemas", api.response_type.__name__, schema)
 
             operation._app = app
             specification.operation(uri, method, operation)

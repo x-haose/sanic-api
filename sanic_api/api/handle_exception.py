@@ -2,10 +2,11 @@ from sanic import Request
 from sanic.log import logger
 
 from sanic_api.api.api import Response
+from sanic_api.api.exception import ServerException
 from sanic_api.enum import RespCodeEnum
 
 
-def server_exception(request: Request, e):
+def server_exception(request: Request, e: ServerException):
     """
     处理业务异常
     Args:
