@@ -43,13 +43,9 @@ def init_blueprint(sanic_app: Sanic):
         specmod = import_module(".".join(modules), sanic_app.__module__)
 
         # 获取该模块下的所有蓝图
-        blueprints = [
-            m[1] for m in getmembers(specmod, lambda o: isinstance(o, Blueprint))
-        ]
+        blueprints = [m[1] for m in getmembers(specmod, lambda o: isinstance(o, Blueprint))]
 
-        blueprint_modules = (
-            modules[::-1][1:-1] if modules[-1] != "api" else modules[::-1][:-1]
-        )
+        blueprint_modules = modules[::-1][1:-1] if modules[-1] != "api" else modules[::-1][:-1]
         for index, m in enumerate(blueprint_modules):
             blueprint_group[m] = blueprint_group.get(m, Blueprint.group(url_prefix=m))
             if index == 0:
@@ -100,7 +96,7 @@ async def before_server_start(sanic_app: Sanic, loop):
     Returns:
 
     """
-    logger.info(f"Worler {sanic_app.m.pid} 启动")
+    logger.debug(f"Worler {sanic_app.m.pid} 启动")
 
 
 def app_factory():

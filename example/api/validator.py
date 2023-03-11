@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 
 from sanic_api.api import API
-from sanic_api.model import ListModel
+from sanic_api.api.model import ListRespModel, ResponseModel
 
 
 class Pagination(BaseModel):
@@ -18,9 +18,7 @@ class ListParam(Pagination):
     列表
     """
 
-    orderings: str = Field(
-        None, title="排序字段", description='排序字段，多个字段 ”,“ 分割，倒序使用 "-", 如："id, -name"'
-    )
+    orderings: str = Field(None, title="排序字段", description='排序字段，多个字段 ”,“ 分割，倒序使用 "-", 如："id, -name"')
 
 
 class UserModel(BaseModel):
@@ -36,7 +34,7 @@ class AddUserReqModel(BaseModel):
     user: UserModel = Field(title="用户信息")
 
 
-class AddUserRespModel(BaseModel):
+class AddUserRespModel(ResponseModel):
     """
     响应参数
     """
@@ -50,7 +48,7 @@ class FindOneUserRespModel(UserModel, AddUserRespModel):
     """
 
 
-class UserListRespModel(ListModel, FindOneUserRespModel):
+class UserListRespModel(ListRespModel, FindOneUserRespModel):
     """
     用户列表响应参数
     """
