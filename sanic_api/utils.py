@@ -1,7 +1,4 @@
-import os
-import re
 from decimal import Decimal
-from glob import glob
 from importlib import import_module
 from inspect import getmembers
 from pathlib import Path
@@ -23,9 +20,7 @@ def getpath_by_root(path: str) -> Path:
     Returns:
         完整路径
     """
-    cwd_path = Path(os.getcwd())
-    full_path = Path(os.path.abspath(cwd_path / path))
-    return full_path
+    return (Path.cwd() / path).absolute()
 
 
 def json_dumps(data: dict, default=None) -> str:
@@ -71,8 +66,6 @@ def auto_blueprint(sanic_app: Sanic, base_api_module_name):
     Returns:
 
     """
-    # app 名称
-    app_name = Path(os.getcwd()).parent.name
     # api层名称
     base_api_name: str = base_api_module_name.split(".")[-1]
     # api层模块
@@ -84,15 +77,15 @@ def auto_blueprint(sanic_app: Sanic, base_api_module_name):
     blueprint_group: Dict[str, BlueprintGroup] = {}
 
     # 遍历所有__init__文件找到所有蓝图
-    for path in glob(f"{base_api_dir}/**/__init__.py", recursive=True):
+    for path in base_api_dir.rglob("__init__.py"):
         # 蓝图所在上层的模块
-        modules = re.findall(rf"{app_name}/(.+?)/__", path)[0].split("/")
-        specmod = import_module(".".join(modules), sanic_app.__module__)
+        modules = [p.name for p in path.parents if str(base_api_dir.parent) in str(p)]
+        specmod = import_module(".".join(modules[::-1]), sanic_app.__module__)
 
         # 获取该模块下的所有蓝图
         blueprints = [m[1] for m in getmembers(specmod, lambda o: isinstance(o, Blueprint))]
 
-        blueprint_modules = modules[::-1][1:-1] if modules[-1] != "api" else modules[::-1][:-1]
+        blueprint_modules = modules[:-1]
         for index, m in enumerate(blueprint_modules):
             blueprint_group[m] = blueprint_group.get(m, Blueprint.group(url_prefix=m))
             if index == 0:
