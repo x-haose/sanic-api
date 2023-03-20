@@ -1,4 +1,4 @@
-from sanic import Blueprint, text
+from sanic import Blueprint, Request, text
 
 from sanic_api.api.exception import ServerException
 
@@ -14,3 +14,9 @@ async def hello(request):
 @t1_blueprint.route("/error", methods=["GET", "POST"])
 async def error(request):
     raise ServerException(message="Error")
+
+
+@t1_blueprint.route("/restart", methods=["GET", "POST"])
+async def restart(request: Request):
+    request.app.m.restart(all_workers=True, zero_downtime=True)
+    return text("ok")

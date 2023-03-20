@@ -74,7 +74,7 @@ def auto_blueprint(sanic_app: Sanic, base_api_module_name):
     base_api_dir = Path(str(base_api_module.__file__)).parent
 
     # 所有路由组的字典
-    blueprint_group: Dict[str, BlueprintGroup] = {}
+    blueprint_group: Dict[str, BlueprintGroup] = {base_api_name: BlueprintGroup(base_api_name)}
 
     # 遍历所有__init__文件找到所有蓝图
     for path in base_api_dir.rglob("__init__.py"):
@@ -87,7 +87,7 @@ def auto_blueprint(sanic_app: Sanic, base_api_module_name):
 
         blueprint_modules = modules[:-1]
         for index, m in enumerate(blueprint_modules):
-            blueprint_group[m] = blueprint_group.get(m, Blueprint.group(url_prefix=m))
+            blueprint_group[m] = blueprint_group.get(m, Blueprint.group())
             if index == 0:
                 blueprint_group[m].extend(blueprints)
             else:
