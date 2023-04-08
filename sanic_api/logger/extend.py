@@ -8,6 +8,7 @@ from loguru import logger
 # noinspection PyProtectedMember
 from loguru._defaults import env
 from sanic import HTTPResponse, Request
+from sanic.application.constants import Mode
 from sanic.server import HttpProtocol
 from sanic_ext import Extension
 
@@ -26,8 +27,7 @@ class LoggerExtend(Extension):
         if not self.included():
             return
 
-        is_debug = self.app.config.get("debug")
-        log_level = logging.DEBUG if is_debug else logging.INFO
+        log_level = logging.DEBUG if self.app.state.mode is Mode.DEBUG else logging.INFO
         log_format = env(
             "LOGURU_FORMAT",
             str,

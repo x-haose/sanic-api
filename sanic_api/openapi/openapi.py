@@ -1,5 +1,3 @@
-import inspect
-
 from pydantic import BaseModel
 from sanic import Sanic
 from sanic_ext.extensions.openapi.builders import (
@@ -9,24 +7,24 @@ from sanic_ext.extensions.openapi.builders import (
 )
 from sanic_ext.extensions.openapi.definitions import Schema
 from sanic_ext.extensions.openapi.types import Array, Object
-from sanic_ext.utils.route import clean_route_name, get_all_routes
+from sanic_ext.utils.route import get_all_routes
 
 from sanic_api.api import API
+from sanic_api.api.model import ListRespModel
 from sanic_api.api.validators import get_handler_param
-from sanic_api.model import ListModel
 
 
-# noinspection PyUnusedLocal
-def auto_doc(app: Sanic, loop):
+# noinspection PyProtectedMember
+def auto_doc(app: Sanic):
     config = app.config
     specification = SpecificationBuilder()
 
     for (
         uri,
         route_name,
-        route_parameters,
+        _route_parameters,
         method_handlers,
-        host,
+        _host,
     ) in get_all_routes(app, config.OAS_URL_PREFIX):
         uri = uri if uri == "/" else uri.rstrip("/")
 
@@ -38,20 +36,18 @@ def auto_doc(app: Sanic, loop):
             ):
                 continue
 
+            if hasattr(_handler, "view_class"):
+                _handler = getattr(_handler.view_class, method.lower())
+            operation: OperationBuilder = OperationStore()[_handler]
+
+            if operation._exclude or "openapi" in operation.tags:
+                continue
+
             api_cls = get_handler_param(_handler)
             if not api_cls:
                 continue
 
             api: API = api_cls()
-
-            operation: OperationBuilder = OperationStore()[_handler]
-            operation_exclude = operation._exclude
-            operation_default = operation._default
-            operation_autodoc = operation._autodoc
-            operation_allow_autodoc = operation._allow_autodoc
-
-            if operation_exclude or "openapi" in operation.tags:
-                continue
 
             # 读取蓝图上面的 blueprint.ctx.desc 属性来代替name设置中文tag名
             if len(route_name.split(".")) > 1:
@@ -60,14 +56,10 @@ def auto_doc(app: Sanic, loop):
                 api.tags.insert(0, blueprint.ctx.desc)
 
             # 设置接口的标签和描述
-            operation.tag(*api.tags)
-            tags_str = " ".join([f"[{tag}](/docs#tag/{tag})" for tag in api.tags])
+            tags = set(api.tags)
+            operation.tag(*tags)
+            tags_str = " ".join([f"[{tag}](/docs#tag/{tag})" for tag in tags])
             operation.describe(description=f"### 标签: {tags_str}\n{api.description}")
-
-            docstring = inspect.getdoc(_handler)
-
-            if docstring and app.config.OAS_AUTODOC and operation_allow_autodoc:
-                operation.autodoc(docstring)
 
             if api.json_req_type:
                 body_type = api.json_req_type
@@ -77,75 +69,34 @@ def auto_doc(app: Sanic, loop):
                 mine_type = "application/x-www-form-urlencoded"
             else:
                 body_type, mine_type, body_dict = ["", "", {}]
+
             if body_type:
-                body_schema: dict = body_type.schema(
-                    ref_template="#/components/schemas/{model}"
-                )
+                body_schema: dict = body_type.schema(ref_template="#/components/schemas/{model}")
                 body_dict = {
                     mine_type: Object(body_schema["properties"]),
                 }
-                for model_name, schema_model in body_schema.get(
-                    "definitions", {}
-                ).items():
+                for model_name, schema_model in body_schema.get("definitions", {}).items():
                     specification.add_component("schemas", model_name, schema_model)
-                # noinspection PyProtectedMember
-                body_dict[mine_type]._fields["required"] = body_schema.get(
-                    "required", []
-                )
+                body_dict[mine_type]._fields["required"] = body_schema.get("required", [])
                 operation.body(body_dict)
 
             if api.query_req_type:
-                for k, v in api.query_req_type.schema()[
-                    "properties"
-                ].items():  # type: (str, dict)
+                for k, v in api.query_req_type.schema()["properties"].items():  # type: (str, dict)
                     operation.parameter(k, Schema(**v))
 
-            if api.response_type:
-                if issubclass(api.response_type, BaseModel):
-                    schema: Schema = Object(
-                        api.response_type.schema(
-                            ref_template="#/components/schemas/{model}"
-                        )["properties"]
-                    )
-                    if issubclass(api.response_type, ListModel):
-                        schema = Array(schema)
-                    operation.response(
-                        status=200,
-                        content={"application/json": schema},
-                        description="成功",
-                    )
-                    specification.add_component(
-                        "schemas", api.response_type.__name__, schema
-                    )
-
-            operation_default["operationId"] = f"{method.lower()}~{route_name}"
-            operation_default["summary"] = clean_route_name(route_name)
-
-            if host:
-                if "servers" not in operation_default:
-                    operation_default["servers"] = []
-                operation_default["servers"].append({"url": f"//{host}"})
-
-            for _parameter in route_parameters:
-                if any(
-                    param.fields["name"] == _parameter.name
-                    for param in operation.parameters
-                ):
-                    continue
-
-                kwargs = {}
-                if operation_autodoc and (
-                    parameters := operation_autodoc.get("parameters")
-                ):
-                    description = None
-                    for param in parameters:
-                        if param["name"] == _parameter.name:
-                            description = param.get("description")
-                            break
-                    if description:
-                        kwargs["description"] = description
-
-                operation.parameter(_parameter.name, _parameter.cast, "path", **kwargs)
+            if api.response_type and issubclass(api.response_type, BaseModel):
+                resp_schema = api.response_type.schema(ref_template="#/components/schemas/{model}")
+                schema: Schema = Object(resp_schema["properties"])
+                if issubclass(api.response_type, ListRespModel):
+                    schema = Array(schema)
+                for model_name, schema_model in resp_schema.get("definitions", {}).items():
+                    specification.add_component("schemas", model_name, schema_model)
+                operation.response(
+                    status=200,
+                    content={"application/json": schema},
+                    description="成功",
+                )
+                specification.add_component("schemas", api.response_type.__name__, schema)
 
             operation._app = app
             specification.operation(uri, method, operation)

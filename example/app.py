@@ -1,78 +1,62 @@
-from pydantic.fields import Field
-from pydantic.main import BaseModel
-from sanic import Blueprint, Request, Sanic, text
-from sanic.worker.loader import AppLoader
+from sanic import Sanic
+from sanic.log import logger
 
+from example.settings import settings
 from sanic_api import init_api
-from sanic_api.api import API
-from sanic_api.enum import EnumBase, EnumField
-
-app = Sanic(name="test", configure_logging=False)
-
-user_bp = Blueprint("user", url_prefix="/user")
-user_bp.ctx.desc = "用户"
+from sanic_api.utils import auto_blueprint
 
 
-class UserTypeEnum(EnumBase):
-    ADMIN = EnumField(value="admin", desc="管理员")
-    aa = "ddddd"
-
-
-class UserModel(BaseModel):
-    username: str = Field(title="用户名")
-    password: str = Field(title="密码", description="密码，经过md5加密的")
-    type: UserTypeEnum = Field(title="用户类型", description=UserTypeEnum.to_desc())
-
-
-class AddUserReqModel(BaseModel):
+async def main_process_start(sanic_app: Sanic):
     """
-    添加请求参数
+    主进程启动之前调用
+    Args:
+        sanic_app: application
+
+    Returns:
+
     """
+    sanic_cfg = settings.sanic.dict(by_alias=True)
+    sanic_app.config.update(sanic_cfg)
+    logger.info(f"{sanic_app.name} 服务启动")
 
-    user: UserModel = Field(title="用户信息")
 
-
-class AddUserRespModel(BaseModel):
+async def main_process_stop(sanic_app: Sanic):
     """
-    响应参数
+    主进程停止之后调用
+    Args:
+        sanic_app: application
+
+    Returns:
+
     """
 
-    uid: int = Field(default=None, title="用户ID", description="创建用户的用户ID")
+    logger.info(f"{sanic_app.name} 服务停止")
 
 
-class UserAddApi(API):
+async def before_server_start(sanic_app: Sanic):
     """
-    添加用户API
+    worker启动之前调用
+    Args:
+        sanic_app: application
+
+    Returns:
+
     """
-
-    json_req: AddUserReqModel
-    resp: AddUserRespModel
-    description = "这是添加用户API接口"
-    tags = ["弃用"]
+    logger.debug(f"Worler {sanic_app.m.pid} 启动")
 
 
-@app.get("/")
-def index(r):
-    return text("server")
+def app_factory():
+    """
+    app 工厂方法
+    Returns:
 
+    """
+    app = Sanic(name="test", configure_logging=False)
+    app.main_process_start(main_process_start)
+    app.main_process_stop(main_process_stop)
+    app.before_server_start(before_server_start)
 
-@user_bp.route("/create_user", methods=["POST"])
-async def user_add(request: Request, api: UserAddApi):
-    api.resp.uid = 1
-
-    return api.json_resp()
-
-
-def main():
-    api_blueprint = Blueprint.group(url_prefix="/api")
-    api_blueprint.append(user_bp)
-    app.blueprint(api_blueprint)
+    auto_blueprint(app, "example.api")
     init_api(app)
+
     return app
-
-
-if __name__ == "__main__":
-    loader = AppLoader(factory=main)
-    app = loader.load()
-    app.prepare(port=5277, debug=True)
-    Sanic.serve(app, app_loader=loader)

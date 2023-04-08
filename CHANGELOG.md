@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.5] - 2023-04-09
+
+### Added
+- 支持捕获在中间件期间发生错误的异常情况
+- 增加配置类功能
+- 示例文件更新
+- 工具方法中新增自动蓝图方法
+
+### Changed
+- 默认的json dumps方法改为orjson
+- sanic 最低版本依赖更新至22.12
+- 优化API响应封装及响应文档的生成
+
+### Fixed
+- 修复openapi tag重复的问题
+- 修复日志级别判断不准问题
+
 ## [0.2.4] - 2023-02-05
 
 ### Fixed

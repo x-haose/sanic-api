@@ -1,7 +1,13 @@
-import os
-from datetime import datetime
 from decimal import Decimal
+from importlib import import_module
+from inspect import getmembers
 from pathlib import Path
+from typing import Any, Dict, Optional
+
+import orjson
+from sanic import Blueprint, Request, Sanic
+from sanic.blueprint_group import BlueprintGroup
+from sanic.exceptions import ServerError as SanicServerError
 
 
 def getpath_by_root(path: str) -> Path:
@@ -14,21 +20,78 @@ def getpath_by_root(path: str) -> Path:
     Returns:
         完整路径
     """
-    cwd_path = Path(os.getcwd())
-    full_path = Path(os.path.abspath(cwd_path / path))
-    return full_path
+    return (Path.cwd() / path).absolute()
 
 
-def json_dumps(item):
+def json_dumps(data: dict, default=None) -> str:
     """
-    自定义json的dump
+    调用orjson进行dumps
     Args:
-        item: key
+        data: 数据
+        default: 数量处理方法
+
+    Returns:
+        返回json字符串
+    """
+
+    def _default(item):
+        if isinstance(item, Decimal):
+            return float(item.to_eng_string())
+
+    json_bytes = orjson.dumps(
+        data,
+        default=default or _default,
+        option=orjson.OPT_APPEND_NEWLINE | orjson.OPT_INDENT_2,
+    )
+    return json_bytes.decode("utf-8")
+
+
+def get_current_request() -> Optional[Request]:
+    """ "
+    获取当前请求
+    """
+    try:
+        return Request.get_current()
+    except SanicServerError:
+        return None
+
+
+def auto_blueprint(sanic_app: Sanic, base_api_module_name):
+    """
+    自动生成蓝图
+    Args:
+        sanic_app: app
+        base_api_module_name: api层模块名称
 
     Returns:
 
     """
-    if isinstance(item, Decimal):
-        return float(item.to_eng_string())
-    if isinstance(item, datetime):
-        return item.isoformat()
+    # api层名称
+    base_api_name: str = base_api_module_name.split(".")[-1]
+    # api层模块
+    base_api_module = import_module(base_api_module_name, sanic_app.__module__)
+    # api层目录
+    base_api_dir = Path(str(base_api_module.__file__)).parent
+
+    # 所有路由组的字典
+    blueprint_group: Dict[str, BlueprintGroup] = {base_api_name: BlueprintGroup(base_api_name)}
+
+    # 遍历所有__init__文件找到所有蓝图
+    for path in base_api_dir.rglob("__init__.py"):
+        # 蓝图所在上层的模块
+        modules = [p.name for p in path.parents if str(base_api_dir.parent) in str(p)]
+        specmod = import_module(".".join(modules[::-1]), sanic_app.__module__)
+
+        # 获取该模块下的所有蓝图
+        blueprints = [m[1] for m in getmembers(specmod, lambda o: isinstance(o, Blueprint))]
+
+        blueprint_modules = modules[:-1]
+        for index, m in enumerate(blueprint_modules):
+            blueprint_group[m] = blueprint_group.get(m, Blueprint.group())
+            if index == 0:
+                blueprint_group[m].extend(blueprints)
+            else:
+                prev_bg: Any = blueprint_group.get(blueprint_modules[index - 1])
+                blueprint_group[m].append(prev_bg)
+
+    sanic_app.blueprint(blueprint_group[base_api_name])
