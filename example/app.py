@@ -56,7 +56,7 @@ def app_factory():
     app.main_process_stop(main_process_stop)
     app.before_server_start(before_server_start)
 
-    auto_blueprint(app, "example.api")
+    auto_blueprint(app, "api")
     init_api(app)
 
     return app

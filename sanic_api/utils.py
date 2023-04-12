@@ -1,8 +1,7 @@
 from decimal import Decimal
 from importlib import import_module
-from inspect import getmembers
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Dict, List, Optional
 
 import orjson
 from sanic import Blueprint, Request, Sanic
@@ -56,7 +55,7 @@ def get_current_request() -> Optional[Request]:
         return None
 
 
-def auto_blueprint(sanic_app: Sanic, base_api_module_name):
+def auto_blueprint(sanic_app: Sanic, base_api_module_name: str) -> None:
     """
     自动生成蓝图
     Args:
@@ -66,32 +65,48 @@ def auto_blueprint(sanic_app: Sanic, base_api_module_name):
     Returns:
 
     """
-    # api层名称
-    base_api_name: str = base_api_module_name.split(".")[-1]
-    # api层模块
-    base_api_module = import_module(base_api_module_name, sanic_app.__module__)
-    # api层目录
-    base_api_dir = Path(str(base_api_module.__file__)).parent
+    # 导入base_api_module_name模块并获取其文件夹路径
+    base_api_dir: Path = Path.cwd() / base_api_module_name
 
-    # 所有路由组的字典
-    blueprint_group: Dict[str, BlueprintGroup] = {base_api_name: BlueprintGroup(base_api_name)}
+    # 创建根API蓝图组
+    root_group: BlueprintGroup = BlueprintGroup(base_api_module_name)
 
-    # 遍历所有__init__文件找到所有蓝图
-    for path in base_api_dir.rglob("__init__.py"):
-        # 蓝图所在上层的模块
-        modules = [p.name for p in path.parents if str(base_api_dir.parent) in str(p)]
-        specmod = import_module(".".join(modules[::-1]), sanic_app.__module__)
+    blueprint_group_map: Dict[str, BlueprintGroup] = {}
 
-        # 获取该模块下的所有蓝图
-        blueprints = [m[1] for m in getmembers(specmod, lambda o: isinstance(o, Blueprint))]
+    # 遍历所有__init__.py文件，查找蓝图并创建对应的蓝图组
+    init_files: List[Path] = list(base_api_dir.glob("**/__init__.py"))
+    for init_file in reversed(init_files):
+        # 忽略__init__.py
+        init_file: Path = init_file.parent
+        # 获取该蓝图所在的模块路径和名称
+        module_path: str = init_file.relative_to(base_api_dir.parent).with_suffix("").as_posix()
+        module_name: str = module_path.replace("/", ".")
 
-        blueprint_modules = modules[:-1]
-        for index, m in enumerate(blueprint_modules):
-            blueprint_group[m] = blueprint_group.get(m, Blueprint.group())
-            if index == 0:
-                blueprint_group[m].extend(blueprints)
+        # 导入蓝图所在的模块，并获取该模块下的所有蓝图
+        module = import_module(module_name, base_api_module_name)
+        blueprints = [getattr(module, attr) for attr in dir(module) if isinstance(getattr(module, attr), Blueprint)]
+        # 拆分模块路径，创建对应的蓝图组并添加到父级蓝图组中
+        parts = [path for path in module_path.split("/") if path not in [base_api_module_name, init_file.name]]
+
+        if len(blueprints) == 1:
+            blueprint = blueprints[0]
+            if not parts:
+                blueprint_group = blueprint_group_map.get(init_file.name)
+                if blueprint_group:
+                    blueprint.url_prefix = ""
+                    blueprint_group.append(blueprint)
+                    root_group.append(blueprint_group)
+                else:
+                    root_group.append(blueprint)
             else:
-                prev_bg: Any = blueprint_group.get(blueprint_modules[index - 1])
-                blueprint_group[m].append(prev_bg)
+                for part in parts:
+                    group = blueprint_group_map.get(part, BlueprintGroup(part))
+                    group.append(blueprint)
+                    blueprint_group_map[part] = group
+        else:
+            group = BlueprintGroup(init_file.name)
+            group.extend(blueprints)
+            root_group.append(group)
 
-    sanic_app.blueprint(blueprint_group[base_api_name])
+    # 将根API蓝图组添加到应用中
+    sanic_app.blueprint(root_group)
