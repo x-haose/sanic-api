@@ -1,9 +1,7 @@
-from pydantic import Field
-
-from .base import SettingsBase
+from pydantic import BaseModel, Field
 
 
-class SanicApiConfig(SettingsBase):
+class SanicApiConfig(BaseModel):
     """
     sanic_api 框架需要的配置
     """

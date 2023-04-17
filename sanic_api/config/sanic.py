@@ -1,9 +1,7 @@
-from pydantic import Field
-
-from .base import SettingsBase
+from pydantic import BaseModel, Field
 
 
-class SanicConfig(SettingsBase):
+class SanicConfig(BaseModel):
     """
     sanic 框架本身的配置
     """
