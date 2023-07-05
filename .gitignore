@@ -11,6 +11,7 @@ __pycache__/
 
 # pdm
 .pdm.toml
+.pdm-python
 
 # Distribution / packaging
 .Python
