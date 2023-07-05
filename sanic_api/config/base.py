@@ -60,7 +60,7 @@ class SettingsBase(BaseSettings):
     """
 
     class Config:
-        root_config_dir = getpath_by_root("../configs")
+        root_config_dir = getpath_by_root("./configs")
         env_file = root_config_dir / ".env"
         env_file_encoding = "utf-8"
         env_nested_delimiter = "__"
