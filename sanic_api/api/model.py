@@ -1,7 +1,8 @@
 from typing import Optional, Union
 
-from pydantic.fields import ModelField, ModelPrivateAttr
+from pydantic.fields import ModelPrivateAttr
 from pydantic.main import BaseModel
+from pydantic_core.core_schema import ModelField
 
 
 class ResponseModel(BaseModel):
@@ -10,7 +11,7 @@ class ResponseModel(BaseModel):
     """
 
     def __new__(cls, *args, **kwargs):
-        for _field, value in cls.__fields__.items():
+        for _field, value in cls.model_fields.items():
             if not isinstance(value, ModelField):
                 continue
             value.required = False

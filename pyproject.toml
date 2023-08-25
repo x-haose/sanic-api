@@ -6,9 +6,10 @@ authors = [
     { name = "昊色居士", email = "xhrtxh@gmail.com" },
 ]
 dependencies = [
-    "sanic>=22.3",
-    "pydantic[dotenv]>=1.10.2",
-    "sanic-ext>=22.12",
+    "sanic>=23.6",
+    "sanic-ext>=23.6",
+    "pydantic[dotenv]>=2.0",
+    "pydantic-settings>=2.0.1",
     "loguru>=0.6.0",
     "pygments>=2.13.0",
     "ujson>=5.7.0",
@@ -18,9 +19,6 @@ dependencies = [
 requires-python = ">=3.8"
 readme = "README.MD"
 license = { text = "MIT" }
-[project.optional-dependencies]
-
-
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"
@@ -86,10 +84,32 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 [tool.pdm]
 
 [tool.pdm.dev-dependencies]
-dev = [
-    "pre-commit>=3.0.4",
+pre-commit = [
+    "pre-commit>=3.0.4"
+]
+
+type = [
     "types-ujson>=5.7.0.0",
     "types-PyYAML>=6.0.12.2"
+]
+
+docs = [
+    "autoflake",
+    "mkdocs",
+    "mkdocs-embed-external-markdown",
+    "mkdocs-exclude",
+    "mkdocs-material",
+    "mkdocs-redirects",
+    "mkdocs-simple-hooks",
+    "mkdocstrings-python",
+    "tomli",
+    "pyupgrade",
+    "mike @ git+https://github.com/jimporter/mike.git",
+    "mkdocs-embed-external-markdown>=2.3.0",
+    "black>=23.3.0",
+    "pytest-examples>=0.0.9",
+    "pydantic-settings>=2.0b1",
+    "pydantic-extra-types @ git+https://github.com/pydantic/pydantic-extra-types.git@main"
 ]
 
 [[tool.pdm.source]]
