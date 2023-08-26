@@ -47,7 +47,7 @@ async def validators(request: Request):
     Returns:
 
     """
-    # 如果执行中间价直接就发生了异常则直接抛出
+    # 如果执行中间件时发生了异常则直接抛出
     if hasattr(request.ctx, "exception"):
         raise request.ctx.exception
 
@@ -65,12 +65,12 @@ async def validators(request: Request):
     if api.json_req_type and api.query_req_type:
         raise ValidationInitError("不能同时存在json参数和form参数")
 
-    if api.json_req_type and request.json:
-        _do_validation(param_enum=ParamEnum.JSON, api=api, data=request.json)
-    elif api.form_req_type and request.form:
-        _do_validation(param_enum=ParamEnum.FORM, api=api, data=request.form)
-    if api.query_req_type and request.query_args:
-        _do_validation(param_enum=ParamEnum.QUERY, api=api, data=request.args)
+    if request.json:
+        _do_validation(param_enum=ParamEnum.JSON, api=api, data=request.json or {})
+    elif request.form:
+        _do_validation(param_enum=ParamEnum.FORM, api=api, data=request.form or {})
+    if request.query_args:
+        _do_validation(param_enum=ParamEnum.QUERY, api=api, data=request.args or {})
 
     request.match_info.update({"api": api})
     request.ctx.api = api
