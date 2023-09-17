@@ -2,11 +2,16 @@ import json
 from abc import ABC
 from configparser import ConfigParser
 from pathlib import Path
-from typing import Any, Dict, Tuple, Type, ClassVar
+from typing import Any, ClassVar, Dict, Tuple, Type
 
 import yaml
-from pydantic.fields import FieldInfo, PrivateAttr
-from pydantic_settings import BaseSettings, SettingsConfigDict, PydanticBaseSettingsSource
+from pydantic.fields import FieldInfo
+from pydantic_settings import (
+    BaseSettings,
+    PydanticBaseSettingsSource,
+    SettingsConfigDict,
+)
+
 from sanic_api.utils import getpath_by_root
 
 
@@ -15,36 +20,32 @@ class CustomSettingsSource(PydanticBaseSettingsSource, ABC):
     自定义的配置文件来源基类
     """
 
-    def __init__(self, settings_cls: type[BaseSettings], path: Path, ):
+    def __init__(
+        self,
+        settings_cls: Type[BaseSettings],
+        path: Path,
+    ):
         super().__init__(settings_cls)
         self.path = path
-        self.encoding = self.config.get('env_file_encoding')
+        self.encoding = self.config.get("env_file_encoding")
         self.src_dict = self.get_src_dict()
 
     def get_src_dict(self) -> Dict[str, Any]:
         return {}
 
-    def get_field_value(
-            self, field: FieldInfo, field_name: str
-    ) -> Tuple[Any, str, bool]:
+    def get_field_value(self, field: FieldInfo, field_name: str) -> Tuple[Any, str, bool]:
         field_value = self.src_dict.get(field_name)
         return field_value, field_name, False
 
-    def prepare_field_value(
-            self, field_name: str, field: FieldInfo, value: Any, value_is_complex: bool
-    ) -> Any:
+    def prepare_field_value(self, field_name: str, field: FieldInfo, value: Any, value_is_complex: bool) -> Any:
         return value
 
     def __call__(self) -> Dict[str, Any]:
         data: Dict[str, Any] = {}
 
         for field_name, field in self.settings_cls.model_fields.items():
-            field_value, field_key, value_is_complex = self.get_field_value(
-                field, field_name
-            )
-            field_value = self.prepare_field_value(
-                field_name, field, field_value, value_is_complex
-            )
+            field_value, field_key, value_is_complex = self.get_field_value(field, field_name)
+            field_value = self.prepare_field_value(field_name, field, field_value, value_is_complex)
             if field_value is not None:
                 data[field_key] = field_value
 
@@ -84,21 +85,20 @@ class SettingsBase(BaseSettings):
     """
     项目设置的基类
     """
+
     _root_config_dir: ClassVar[Path] = getpath_by_root("./configs")
     model_config = SettingsConfigDict(
-        env_file=str(_root_config_dir / '.env'),
-        env_file_encoding='utf-8',
-        env_nested_delimiter='__'
+        env_file=str(_root_config_dir / ".env"), env_file_encoding="utf-8", env_nested_delimiter="__"
     )
 
     @classmethod
     def settings_customise_sources(
-            cls,
-            settings_cls: Type[BaseSettings],
-            init_settings: PydanticBaseSettingsSource,
-            env_settings: PydanticBaseSettingsSource,
-            dotenv_settings: PydanticBaseSettingsSource,
-            file_secret_settings: PydanticBaseSettingsSource,
+        cls,
+        settings_cls: Type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
     ) -> Tuple[PydanticBaseSettingsSource, ...]:
         # 默认的设置
         default_settings = {
