@@ -1,12 +1,12 @@
 from pydantic import Field
 
-from sanic_api.config.base import SettingsBase
 from sanic_api.config.sanic import SanicConfig
 from sanic_api.config.sanic_api import SanicApiConfig
 from sanic_api.enum import RunModeEnum
+from hs_config import ConfigBase
 
 
-class DefaultSettings(SettingsBase):
+class DefaultSettings(ConfigBase):
     """
     配置类
     """
