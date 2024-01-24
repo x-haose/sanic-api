@@ -1,6 +1,6 @@
 [project]
 name = "sanic-api"
-version = "0.2.7"
+version = "0.2.8"
 description = "Sanic 框架实用API工具集，拥有自动生成文档、参数校验、配置的导入、日志功能的优化等功能，更好的助力接口的开发"
 authors = [
     { name = "昊色居士", email = "xhrtxh@gmail.com" },
