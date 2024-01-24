@@ -75,9 +75,9 @@ def auto_blueprint(sanic_app: Sanic, base_api_module_name: str) -> None:
 
     # 遍历所有__init__.py文件，查找蓝图并创建对应的蓝图组
     init_files: List[Path] = list(base_api_dir.glob("**/__init__.py"))
-    for init_file in reversed(init_files):
+    for file in reversed(init_files):
         # 忽略__init__.py
-        init_file: Path = init_file.parent
+        init_file: Path = file.parent
         # 获取该蓝图所在的模块路径和名称
         module_path: str = init_file.relative_to(base_api_dir.parent).with_suffix("").as_posix()
         module_name: str = module_path.replace("/", ".")
