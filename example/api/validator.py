@@ -18,7 +18,9 @@ class ListParam(Pagination):
     列表
     """
 
-    orderings: str = Field(None, title="排序字段", description='排序字段，多个字段 ”,“ 分割，倒序使用 "-", 如："id, -name"')
+    orderings: str = Field(
+        None, title="排序字段", description='排序字段，多个字段 ”,“ 分割，倒序使用 "-", 如："id, -name"'
+    )
 
 
 class UserModel(BaseModel):
