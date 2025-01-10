@@ -52,7 +52,7 @@ pyyaml==6.0.2
     # via sanic-ext
 requests==2.31.0
     # via sanic-api
-sanic==24.6.0
+sanic==24.12.0
     # via sanic-api
 sanic-ext==23.12.0
     # via sanic-api

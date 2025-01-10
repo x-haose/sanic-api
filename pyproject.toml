@@ -27,7 +27,7 @@ requires-python = ">= 3.10"
 
 dependencies = [
     # sanic
-    "sanic>=23.12.0",
+    "sanic>=24.12.0",
     "sanic-ext>=23.12.0",
     # pydantic 模型定义
     "pydantic[dotenv]>=2.9.2",
@@ -71,10 +71,6 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/sanic_api"]
-
-[[tool.rye.sources]]
-name = "default"
-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 
 [tool.bandit]
 skips = [
