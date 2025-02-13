@@ -59,6 +59,7 @@ class BaseApp:
 
         self._setup_logger(app)
         self._setup_config(app)
+        self._setup_openai(app)
 
         app.main_process_stop(self._main_process_stop)
         app.main_process_start(self._main_process_start)
@@ -155,6 +156,8 @@ class BaseApp:
         app.config.LOGGING = True
         self._setup_cors(app)
 
+    def _setup_openai(self, app: Sanic): ...
+
     def _setup_cors(self, app: Sanic):
         """
         设置跨域: 开发模式下允许所有跨域，生产模式下使用配置中的跨域列表
@@ -164,11 +167,13 @@ class BaseApp:
         Returns:
 
         """
+        cors = ",".join(self.settings.cors.origins)
         if self.settings.mode == RunModeEnum.DEBNUG:
-            app.config.CORS_ORIGINS = "*"
             app.config.CORS_SEND_WILDCARD = True
+            app.config.CORS_SUPPORTS_CREDENTIALS = self.settings.cors.supports_credentials
+            app.config.CORS_ORIGINS = cors or "*"
         else:
-            app.config.CORS_ORIGINS = ",".join(self.settings.cors_origins)
+            app.config.CORS_ORIGINS = cors
 
     async def _setup_route(self, app: Sanic):
         """
@@ -216,7 +221,7 @@ class BaseApp:
             return
 
         sentry_sdk.init(
-            dsn=self.settings.sentry_dsn,
+            dsn=str(self.settings.sentry_dsn),
             # Set traces_sample_rate to 1.0 to capture 100%
             # of transactions for tracing.
             traces_sample_rate=1.0,

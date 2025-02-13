@@ -37,6 +37,19 @@ class LoggerSettings(BaseModel):
     loki_url: HttpUrl | None = Field(default=None)
 
 
+class CrosSettings(BaseModel):
+    """
+    跨域设置
+    """
+    # 地址、地址列表、*
+    # 当 credentials等于 'include' 时，origins必须是具体是地址不能是 “*”
+    origins: list[str] | None = Field(default_factory=list)
+
+    # 支持凭证。
+    # 当前端启用了withCredentials 后端需要设置这个值为True
+    supports_credentials: bool = Field(default=False)
+
+
 class DefaultSettings(SettingsBase):
     """
     配置类
@@ -62,7 +75,7 @@ class DefaultSettings(SettingsBase):
     access_log: bool = Field(default=True)
 
     # 跨域设置
-    cors_origins: list[str] | None = Field(default_factory=list)
+    cors: CrosSettings = Field(default_factory=CrosSettings)
 
     # 哨兵连接dsn，如果存在则会把错误信息推送给哨兵
     sentry_dsn: HttpUrl | None = Field(default=None)
