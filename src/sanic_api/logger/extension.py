@@ -7,7 +7,8 @@ from loguru import logger
 
 # noinspection PyProtectedMember
 from loguru._defaults import env
-from loki_logger_handler.loki_logger_handler import LoguruFormatter, LokiLoggerHandler
+from loki_logger_handler.formatters.loguru_formatter import LoguruFormatter
+from loki_logger_handler.loki_logger_handler import LokiLoggerHandler
 from sanic import Sanic
 from sanic.application.constants import Mode
 from sanic_ext import Extension
