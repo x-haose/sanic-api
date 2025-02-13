@@ -41,6 +41,7 @@ class CrosSettings(BaseModel):
     """
     跨域设置
     """
+
     # 地址、地址列表、*
     # 当 credentials等于 'include' 时，origins必须是具体是地址不能是 “*”
     origins: list[str] | None = Field(default_factory=list)

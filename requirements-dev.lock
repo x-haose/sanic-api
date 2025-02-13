@@ -29,7 +29,7 @@ docutils==0.21.2
     # via readme-renderer
 filelock==3.16.1
     # via virtualenv
-hs-config==0.1.3a5
+hs-config==0.1.3
     # via sanic-api
 html5tagger==1.3.0
     # via sanic
@@ -76,15 +76,13 @@ pkginfo==1.12.0
 platformdirs==4.3.6
     # via virtualenv
 pre-commit==4.0.1
-pydantic==2.9.2
+pydantic==2.10.6
     # via hs-config
     # via pydantic-settings
-    # via sanic-api
-pydantic-core==2.23.4
+pydantic-core==2.27.2
     # via pydantic
 pydantic-settings==2.6.1
     # via hs-config
-    # via sanic-api
 pygments==2.18.0
     # via readme-renderer
     # via rich
@@ -96,7 +94,7 @@ pyyaml==6.0.2
     # via sanic-ext
 readme-renderer==44.0
     # via twine
-requests==2.31.0
+requests==2.32.3
     # via requests-toolbelt
     # via sanic-api
     # via twine

@@ -1,6 +1,6 @@
 [project]
 name = "sanic-api"
-version = "0.3.0a4"
+version = "0.3.0"
 keywords = ["Sanic", "异步", "Sanic扩展"]
 description = "Sanic 框架实用API工具集，拥有自动生成文档、参数校验、配置的导入、日志功能的优化等功能，更好的助力接口的开发"
 authors = [
@@ -29,22 +29,18 @@ dependencies = [
     # sanic
     "sanic>=24.12.0",
     "sanic-ext>=23.12.0",
-    # pydantic 模型定义
-    "pydantic[dotenv]>=2.9.2",
-    # pydantic的设置插件
-    "pydantic-settings[yaml,toml]>=2.5.2",
     # 日志打印
     "loguru>=0.7.2",
     # json
     "ujson>=5.7.0",
     "orjson>=3.8.6",
     # 配置
-    "hs-config==0.1.3a5",
+    "hs-config==0.1.3",
     # 哨兵
     "sentry-sdk>=2.17.0",
     # loki日志推送
     "loki-logger-handler>=0.1.4",
-    "requests>=2.31.0,<2.32.dev0",
+    "requests>=2.32.0",
 ]
 
 [project.urls]
