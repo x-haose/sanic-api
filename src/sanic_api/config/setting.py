@@ -37,6 +37,26 @@ class LoggerSettings(BaseModel):
     loki_url: HttpUrl | None = Field(default=None)
 
 
+class JsonRespSettings(BaseModel):
+    """
+    json 响应配置类
+    """
+
+    # 是否使用 {"code": "0", "msg": "success", "data": {}} 的格式
+    use_tml: bool = Field(default=True)
+
+    error_code: str | int = Field(default="ERROR-1")
+
+    # code 字段的名字
+    code_field_name: str = Field(default="code")
+
+    # msg 字段的名字
+    msg_field_name: str = Field(default="msg")
+
+    # data 字段的名字
+    data_field_name: str = Field(default="data")
+
+
 class CrosSettings(BaseModel):
     """
     跨域设置
@@ -83,3 +103,6 @@ class DefaultSettings(SettingsBase):
 
     # 日志配置
     logger: LoggerSettings = Field(default_factory=LoggerSettings)
+
+    # json 响应配置
+    json_resp: JsonRespSettings = Field(default_factory=JsonRespSettings)

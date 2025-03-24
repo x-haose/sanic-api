@@ -1,5 +1,6 @@
 import sentry_sdk
 from sanic import Sanic, text
+from sanic.errorpages import RENDERERS_BY_CONTENT_TYPE
 from sanic.log import logger
 from sanic.worker.loader import AppLoader
 from sanic_ext import Extend
@@ -7,6 +8,7 @@ from sentry_sdk.integrations.asyncio import AsyncioIntegration
 
 from sanic_api import LoggerExtend
 from sanic_api.api import Request
+from sanic_api.api.error import ErrorJSONRenderer
 from sanic_api.config import DefaultSettings, RunModeEnum
 
 
@@ -60,6 +62,7 @@ class BaseApp:
         self._setup_logger(app)
         self._setup_config(app)
         self._setup_openai(app)
+        self._setup_error_handler(app)
 
         app.main_process_stop(self._main_process_stop)
         app.main_process_start(self._main_process_start)
@@ -153,10 +156,23 @@ class BaseApp:
         Returns:
 
         """
-        app.config.LOGGING = True
+        # app.config.LOGGING = True
+        app.config.FALLBACK_ERROR_FORMAT = "json"
         self._setup_cors(app)
 
     def _setup_openai(self, app: Sanic): ...
+
+    def _setup_error_handler(self, _app: Sanic):
+        """
+        设置错误处理器
+        Args:
+            _app: Sanic App
+
+        Returns:
+
+        """
+        ErrorJSONRenderer.json_resp_setting = self.settings.json_resp
+        RENDERERS_BY_CONTENT_TYPE["application/json"] = ErrorJSONRenderer
 
     def _setup_cors(self, app: Sanic):
         """
