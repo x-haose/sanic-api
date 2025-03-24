@@ -57,6 +57,7 @@ class BaseApp:
         Returns:
 
         """
+        Request.json_resp_setting = self.settings.json_resp
         app = Sanic(self.name, configure_logging=False, request_class=Request)
 
         self._setup_logger(app)

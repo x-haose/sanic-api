@@ -4,6 +4,11 @@ from typing import get_origin
 
 from pydantic import BaseModel
 from sanic import Request as SanicRequest
+from sanic.compat import Header
+from sanic.response import JSONResponse
+from sanic_ext.extensions.openapi.builders import OperationStore
+
+from sanic_api.config.setting import JsonRespSettings
 
 
 class Request(SanicRequest):
@@ -11,6 +16,8 @@ class Request(SanicRequest):
     自定义的请求类
     加入便于接口参数获取校验的方法
     """
+
+    json_resp_setting: JsonRespSettings
 
     json_data: BaseModel
     form_data: BaseModel
@@ -21,8 +28,38 @@ class Request(SanicRequest):
     _form_data_type: type[BaseModel] | None
     _query_data_type: type[BaseModel] | None
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def json_resp(
+        self,
+        data: BaseModel | dict | str | int | float | list,
+        server_code: str | int = "",
+        server_msg: str = "",
+        status: int = 200,
+        headers: Header | dict[str, str] | None = None,
+    ) -> JSONResponse:
+        """
+        自定义返回 JSONResponse 的方法
+        如果使用了模板模式则返回模板模式的数据
+        不使用模版情况下：如果data是dict、list直接返回，否则返回{"data": data}
+        Args:
+            data: 内容
+            server_code: 接口服务码
+            server_msg: 接口服务消息
+            status: 状态码
+            headers: 请求头
+
+        Returns:
+
+        """
+        data = data.model_dump(mode="json") if isinstance(data, BaseModel) else data
+        if self.json_resp_setting.use_tml:
+            data = {
+                self.json_resp_setting.code_field_name: server_code,
+                self.json_resp_setting.msg_field_name: server_msg,
+                self.json_resp_setting.data_field_name: data,
+            }
+        else:
+            data = {"data": data} if type(data) not in (dict, list) else data
+        return JSONResponse(data, status=status, headers=headers)
 
     async def receive_body(self):
         """
@@ -136,3 +173,20 @@ class Request(SanicRequest):
             query_data = _proc_param_data(query_data, self._query_data_type)
             self.query_data = self._query_data_type(**query_data)
             _set_arg("query_data", self.query_data)
+
+    def _set_openapi(self):
+        """
+        注入 OpenAPI 信息
+        """
+
+        func = self.route.handler
+
+        # 设置接口的概括和描述
+        api_doc = self._request_type.__doc__ if self._request_type else func.__doc__
+
+        if api_doc:
+            api_doc = api_doc.strip()
+            summary = api_doc.split("\n")[0]
+            description = "\n".join(api_doc.split("\n")[1:])
+
+            OperationStore()[func].describe(summary=summary, description=description)
