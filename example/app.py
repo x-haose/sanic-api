@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from sanic import Blueprint, Sanic, json
 from sanic.log import logger
 
-from sanic_api.api import BaseRespTml, Request
+from sanic_api.api import Request
 from sanic_api.app import BaseApp
 
 user_blueprint = Blueprint("user", "/user")
@@ -12,11 +12,17 @@ class UserInfoModel(BaseModel):
     user_id: int = Field(title="用户ID")
 
 
-class UserInfoResponse(BaseRespTml):
+class UserInfoResponse(BaseModel):
     user_name: str = Field(title="用户名")
 
 
 class UseLoginRequest(Request):
+    """
+    用户登录
+    用户登录描述
+    这也是描述
+    """
+
     form_data: UserInfoModel
 
 
@@ -27,9 +33,7 @@ async def user_info(request: Request, json_data: UserInfoModel):
     """
     logger.info(f"data: {json_data}")
     info = UserInfoResponse(user_name="张三")
-    info.temp_data.code = "0000"
-    info.temp_data.msg = "查询成功"
-    return info.resp()
+    return request.json_resp(info, server_code="0000", server_msg="查询成功")
 
 
 @user_blueprint.post("login")
