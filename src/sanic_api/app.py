@@ -221,7 +221,7 @@ class BaseApp:
             retention=log_config.retention,
             compression=log_config.compression,
             loki_url=log_config.loki_url,
-            loki_labels={"Application": self.name, "Envornment": self.settings.envornment},
+            loki_labels={"application": self.name, "envornment": self.settings.envornment},
         )
         Extend.register(log_ext)
 
