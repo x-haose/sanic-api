@@ -43,7 +43,7 @@ class BaseApp:
         # 默认启用sanic_ext里面的后台日志记录器
         motd_display = {"envornment": settings.envornment}
         config = {"access_log": settings.access_log, "motd_display": motd_display}
-        if settings.mode == RunModeEnum.DEBNUG:
+        if settings.mode == RunModeEnum.DEBUG:
             config.update({"auto_reload": settings.auto_reload, "workers": 1, "debug": True})
         else:
             config.update({"fast": True, "auto_reload": False})
@@ -158,6 +158,7 @@ class BaseApp:
 
         """
         # app.config.LOGGING = True
+        app.config.INSPECTOR = True
         app.config.FALLBACK_ERROR_FORMAT = "json"
         self._setup_cors(app)
 
@@ -185,7 +186,7 @@ class BaseApp:
 
         """
         cors = ",".join(self.settings.cors.origins)
-        if self.settings.mode == RunModeEnum.DEBNUG:
+        if self.settings.mode == RunModeEnum.DEBUG:
             app.config.CORS_SEND_WILDCARD = True
             app.config.CORS_SUPPORTS_CREDENTIALS = self.settings.cors.supports_credentials
             app.config.CORS_ORIGINS = cors or "*"
@@ -221,7 +222,10 @@ class BaseApp:
             retention=log_config.retention,
             compression=log_config.compression,
             loki_url=log_config.loki_url,
-            loki_labels={"application": self.name, "envornment": self.settings.envornment},
+            loki_labels={
+                "application": self.name,
+                "envornment": self.settings.envornment,
+            },
         )
         Extend.register(log_ext)
 

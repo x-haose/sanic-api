@@ -9,7 +9,7 @@ class RunModeEnum(EnumBase):
     运行模式
     """
 
-    DEBNUG = EnumField("debug", desc="开发模式")
+    DEBUG = EnumField("debug", desc="开发模式")
     PRODUCTION = EnumField("prod", desc="生产模式")
 
 
@@ -83,7 +83,7 @@ class DefaultSettings(SettingsBase):
     port: int = Field(default=6969)
 
     # 运行模式
-    mode: RunModeEnum = Field(default=RunModeEnum.DEBNUG)
+    mode: RunModeEnum = Field(default=RunModeEnum.DEBUG)
 
     # 运行环境，仅作为环境标识。
     # 尽量不要使用这个字段去做逻辑判断。请使用mode去进行判断，因为测试环境、预发布环境、生产环境都应属于生产模式模式
