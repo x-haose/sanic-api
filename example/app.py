@@ -4,6 +4,7 @@ from sanic.log import logger
 
 from sanic_api.api import Request
 from sanic_api.app import BaseApp
+from sanic_api.config import DefaultSettings, RunModeEnum
 
 user_blueprint = Blueprint("user", "/user")
 
@@ -57,4 +58,7 @@ class App(BaseApp):
 
 
 if __name__ == "__main__":
-    App.run()
+    settings = DefaultSettings()
+    settings.port = 9999
+    settings.mode = RunModeEnum.PRODUCTION
+    App.run(settings)
