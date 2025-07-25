@@ -224,8 +224,9 @@ class BaseApp:
             loki_url=log_config.loki_url,
             loki_labels={
                 "application": self.name,
-                "envornment": self.settings.envornment,
+                "envornment": self.settings.env,
             },
+            log_in_json=log_config.log_in_json,
         )
         Extend.register(log_ext)
 

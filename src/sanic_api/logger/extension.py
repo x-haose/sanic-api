@@ -33,6 +33,7 @@ class LoggerExtend(Extension):
         compression: str | None = None,
         loki_url: str | None = None,
         loki_labels: dict[str, str] | None = None,
+        log_in_json: bool = False,
     ):
         """
         Args:
@@ -43,6 +44,7 @@ class LoggerExtend(Extension):
             compression: 日志文件压缩格式： "gz", "bz2", "xz", "lzma", "tar", "tar.gz", "tar.bz2", "tar.xz", "zip"
             loki_url: 推送loki的url
             loki_labels：loki推送时的标签
+            log_in_json: 日志是否以json形式打印
 
         """
         self.app = app
@@ -52,6 +54,7 @@ class LoggerExtend(Extension):
         self.compression = compression
         self.loki_url = loki_url
         self.loki_labels = loki_labels
+        self.log_in_json: bool = log_in_json
         self.setup()
 
     def startup(self, bootstrap) -> None:
@@ -84,9 +87,12 @@ class LoggerExtend(Extension):
         )
 
         # 基本的控制台输出
-        log_handlers = [
-            {"sink": sys.stdout, "format": log_format, "colorize": True},
-        ]
+        if self.log_in_json:
+            log_handlers = [{"sink": sys.stdout, "serialize": True}]
+        else:
+            log_handlers = [
+                {"sink": sys.stdout, "format": log_format, "colorize": True},
+            ]
 
         # 日志文件输出
         if self.log_file:
@@ -109,9 +115,9 @@ class LoggerExtend(Extension):
             loki_handler = LokiLoggerHandler(
                 url=self.loki_url,
                 labels=self.loki_labels or {},
-                labelKeys={},
+                label_keys={},
                 timeout=10,
-                defaultFormatter=LoguruFormatter(),
+                default_formatter=LoguruFormatter(),
             )
             log_handlers.append(
                 {
