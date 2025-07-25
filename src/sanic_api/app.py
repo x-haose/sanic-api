@@ -41,7 +41,7 @@ class BaseApp:
         # 开发模式下workers指定为1，自动重载根据配置决定，默认关闭，跨域设置为允许所有跨域
         # 生产模式下使用fast模型，自动指定最多的workers，自定重载强制关闭，跨域使用配置中的跨域列表
         # 默认启用sanic_ext里面的后台日志记录器
-        motd_display = {"envornment": settings.envornment}
+        motd_display = {"envornment": settings.env}
         config = {"access_log": settings.access_log, "motd_display": motd_display}
         if settings.mode == RunModeEnum.DEBUG:
             config.update({"auto_reload": settings.auto_reload, "workers": 1, "debug": True})
