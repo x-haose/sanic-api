@@ -60,7 +60,7 @@ class JsonRespSettings(BaseModel):
     data_field_name: str = Field(default="data")
 
 
-class CrosSettings(BaseModel):
+class CorsSettings(BaseModel):
     """
     跨域设置
     """
@@ -99,7 +99,7 @@ class DefaultSettings(SettingsBase):
     access_log: bool = Field(default=True)
 
     # 跨域设置
-    cors: CrosSettings = Field(default_factory=CrosSettings)
+    cors: CorsSettings = Field(default_factory=CorsSettings)
 
     # 哨兵连接dsn，如果存在则会把错误信息推送给哨兵
     sentry_dsn: HttpUrl | None = Field(default=None)
